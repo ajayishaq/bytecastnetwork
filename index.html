@@ -284,6 +284,9 @@
             transition: all 0.3s;
             border: 1px solid var(--gray-700);
             cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
         
         .article-card:hover {
@@ -303,6 +306,12 @@
             font-weight: bold;
             position: relative;
             overflow: hidden;
+        }
+        
+        .article-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .article-content {
@@ -385,6 +394,225 @@
         
         .category-count {
             color: var(--gray-400);
+        }
+
+        /* Article Page Styles */
+        .article-page {
+            padding: 2rem 0;
+            background: var(--black);
+            min-height: calc(100vh - 80px);
+        }
+
+        .article-header {
+            background: var(--gray-900);
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .article-full-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .article-full-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--white);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .article-full-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            color: var(--gray-400);
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-700);
+        }
+
+        .article-full-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--gray-900);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .article-full-content p {
+            color: var(--gray-300);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .article-full-content h2 {
+            color: var(--white);
+            margin: 2rem 0 1rem 0;
+            font-size: 1.5rem;
+        }
+
+        .article-full-content h3 {
+            color: var(--white);
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.3rem;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            justify-content: center;
+        }
+
+        .share-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .share-twitter {
+            background: #1da1f2;
+            color: white;
+        }
+
+        .share-facebook {
+            background: #3b5998;
+            color: white;
+        }
+
+        .share-linkedin {
+            background: #0077b5;
+            color: white;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        /* Comments Section */
+        .comments-section {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--gray-900);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .comments-title {
+            color: var(--white);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .comment-form {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--gray-700);
+        }
+
+        .comment-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .comment-form input,
+        .comment-form textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--gray-800);
+            border: 1px solid var(--gray-600);
+            border-radius: 8px;
+            color: var(--white);
+            font-family: inherit;
+        }
+
+        .comment-form textarea {
+            grid-column: 1 / -1;
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .comment-form button {
+            background: var(--white);
+            color: var(--black);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .comment-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .comment {
+            background: var(--gray-800);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 3px solid var(--white);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-author {
+            color: var(--white);
+            font-weight: bold;
+        }
+
+        .comment-date {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+
+        .comment-text {
+            color: var(--gray-300);
+            line-height: 1.6;
+        }
+
+        /* Related Articles */
+        .related-articles {
+            margin-top: 3rem;
+        }
+
+        .related-title {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--white);
+            margin-bottom: 2rem;
         }
 
         /* Admin Modal Styles */
@@ -592,20 +820,6 @@
             font-size: 0.8rem;
         }
 
-        /* Success Message */
-        .success-message {
-            background: #10b981;
-            color: white;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            display: none;
-        }
-
-        .success-message.show {
-            display: block;
-        }
-
         /* Popup Affiliate Ads */
         .popup-ad {
             position: fixed;
@@ -762,6 +976,27 @@
         .page.active {
             display: block;
         }
+
+        /* Back button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--gray-800);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: var(--gray-700);
+            transform: translateY(-2px);
+        }
         
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -795,6 +1030,24 @@
                 width: 100%;
                 max-width: 320px;
                 height: 50px;
+            }
+
+            .article-full-title {
+                font-size: 2rem;
+            }
+
+            .comment-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .share-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .article-full-meta {
+                flex-direction: column;
+                gap: 0.5rem;
             }
         }
         
@@ -911,7 +1164,6 @@
 
             <!-- Create Post Tab -->
             <div id="adminCreate" class="admin-content active">
-                <div id="successMessage" class="success-message"></div>
                 <h3 style="color: var(--white); margin-bottom: 1rem;">Create New Article</h3>
                 <form class="content-form" onsubmit="createPost(event)">
                     <div class="form-group">
@@ -935,11 +1187,21 @@
                     </div>
                     <div class="form-group">
                         <label>Content</label>
-                        <textarea id="postContent" rows="10" required></textarea>
+                        <textarea id="postContent" rows="10" required placeholder="Write your full article content here. You can use paragraphs and basic formatting."></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Image URL (optional)</label>
-                        <input type="url" id="postImage">
+                        <label>Article Image</label>
+                        <div style="display: flex; gap: 1rem; align-items: end;">
+                            <div style="flex: 1;">
+                                <input type="file" id="postImageFile" accept="image/*" onchange="handleImageUpload(this)" style="margin-bottom: 0.5rem;">
+                                <input type="url" id="postImage" placeholder="Or paste image URL">
+                            </div>
+                            <button type="button" onclick="clearImage()" style="padding: 0.5rem; background: var(--gray-600); color: var(--white); border: none; border-radius: 5px;">Clear</button>
+                        </div>
+                        <div id="imagePreview" style="margin-top: 1rem; display: none;">
+                            <img id="previewImg" style="max-width: 200px; max-height: 150px; border-radius: 8px; border: 2px solid var(--gray-600);">
+                            <p style="color: var(--gray-400); font-size: 0.8rem; margin-top: 0.5rem;">Image preview</p>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Source (optional)</label>
@@ -1202,6 +1464,105 @@
                 </div>
             </section>
         </div>
+
+        <!-- ARTICLE PAGE -->
+        <div id="articlePage" class="page">
+            <div class="container">
+                <button class="back-btn" onclick="goBack()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 12H5m7-7l-7 7 7 7"/>
+                    </svg>
+                    Back
+                </button>
+                
+                <div class="article-page">
+                    <div class="article-header">
+                        <div class="container">
+                            <div id="articleFullImage" class="article-full-image" style="display: none;">
+                                <img id="articleImage" style="width: 100%; height: 100%; object-fit: cover; border-radius: 15px;">
+                            </div>
+                            <h1 id="articleFullTitle" class="article-full-title"></h1>
+                            <div id="articleFullMeta" class="article-full-meta"></div>
+                        </div>
+                    </div>
+
+                    <!-- Google AdSense Banner -->
+                    <section class="ad-banner">
+                        <div class="container">
+                            <div class="ad-placeholder">
+                                Google AdSense Banner Space (728x90)
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="container">
+                        <div id="articleFullContent" class="article-full-content"></div>
+
+                        <!-- Share Buttons -->
+                        <div class="share-buttons">
+                            <a href="#" id="shareTwitter" class="share-btn share-twitter" target="_blank">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                </svg>
+                                Share on X
+                            </a>
+                            <a href="#" id="shareFacebook" class="share-btn share-facebook" target="_blank">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                </svg>
+                                Share on Facebook
+                            </a>
+                            <a href="#" id="shareLinkedIn" class="share-btn share-linkedin" target="_blank">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                </svg>
+                                Share on LinkedIn
+                            </a>
+                        </div>
+
+                        <!-- Google AdSense Banner -->
+                        <section class="ad-banner">
+                            <div class="ad-placeholder">
+                                Google AdSense Rectangle Ad (300x250)
+                            </div>
+                        </section>
+
+                        <!-- Comments Section -->
+                        <div class="comments-section">
+                            <h3 class="comments-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 0.5rem;">
+                                    <path d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h11c.55 0 1-.45 1-1z"/>
+                                </svg>
+                                Comments (<span id="commentCount">0</span>)
+                            </h3>
+                            
+                            <div class="comment-form">
+                                <form onsubmit="submitComment(event)">
+                                    <div class="comment-form-grid">
+                                        <input type="text" id="commentName" placeholder="Your Name" required>
+                                        <input type="email" id="commentEmail" placeholder="Your Email" required>
+                                    </div>
+                                    <textarea id="commentMessage" placeholder="Share your thoughts..." required></textarea>
+                                    <button type="submit">Post Comment</button>
+                                </form>
+                            </div>
+                            
+                            <div id="commentsList" class="comments-list">
+                                <!-- Comments will be loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- Related Articles -->
+                        <div class="related-articles">
+                            <h3 class="related-title">Related Articles</h3>
+                            <div class="articles-grid" id="relatedArticles">
+                                <!-- Related articles will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <footer>
@@ -1255,32 +1616,22 @@
     <script>
         // Global variables
         let articles = [];
+        let comments = {};
         let isAdminLoggedIn = false;
         let currentPage = 'home';
+        let currentArticleId = null;
+        let previousPage = 'home';
 
         // Admin credentials (in production, this should be handled server-side)
         const ADMIN_USERNAME = 'bytecast_admin';
         const ADMIN_PASSWORD = 'ByteCast#2024!Secure';
 
-        // Storage functions (using JavaScript variables for persistence within session)
-        function saveArticlesToStorage() {
-            // In a real application, this would save to a database
-            // For now, articles persist only during the session
-            console.log('Articles saved to memory:', articles.length);
-        }
-
-        function loadArticlesFromStorage() {
-            // In a real application, this would load from a database
-            console.log('Articles loaded from memory:', articles.length);
-        }
-
         // Initialize the website
         document.addEventListener('DOMContentLoaded', function() {
             loadSampleData();
+            loadFeaturedArticles();
             updateCategoryCounts();
-            loadPageContent('home');
             startAffiliatePopups();
-            console.log('ByteCast Network initialized with', articles.length, 'articles');
         });
 
         // Secret admin access via Ctrl+Shift+A (completely hidden from regular users)
@@ -1293,6 +1644,11 @@
 
         // Page navigation
         function showPage(pageId) {
+            // Store previous page for back navigation
+            if (currentPage !== 'article') {
+                previousPage = currentPage;
+            }
+            
             // Hide all pages
             const pages = document.querySelectorAll('.page');
             pages.forEach(page => page.classList.remove('active'));
@@ -1305,13 +1661,190 @@
                 
                 // Load page-specific content
                 loadPageContent(pageId);
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
             }
+        }
+
+        // Show article page
+        function showArticle(articleId) {
+            const article = articles.find(a => a.id == articleId);
+            if (!article) return;
+
+            currentArticleId = articleId;
+            previousPage = currentPage;
+            
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // Show article page
+            document.getElementById('articlePage').classList.add('active');
+            currentPage = 'article';
+            
+            // Load article content
+            loadFullArticle(article);
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Go back to previous page
+        function goBack() {
+            showPage(previousPage);
+        }
+
+        // Load full article content
+        function loadFullArticle(article) {
+            // Set title and meta
+            document.getElementById('articleFullTitle').textContent = article.title;
+            
+            const meta = document.getElementById('articleFullMeta');
+            meta.innerHTML = `
+                <div><strong>Category:</strong> ${article.category}</div>
+                <div><strong>Published:</strong> ${article.date}</div>
+                <div><strong>Author:</strong> ${article.author}</div>
+                <div><strong>Source:</strong> ${article.source}</div>
+            `;
+
+            // Set image if exists
+            const imageContainer = document.getElementById('articleFullImage');
+            if (article.image) {
+                document.getElementById('articleImage').src = article.image;
+                imageContainer.style.display = 'block';
+            } else {
+                imageContainer.style.display = 'none';
+            }
+
+            // Set content - format paragraphs properly
+            const content = formatArticleContent(article.content);
+            document.getElementById('articleFullContent').innerHTML = content;
+
+            // Set share links
+            const url = encodeURIComponent(window.location.href);
+            const title = encodeURIComponent(article.title);
+            const text = encodeURIComponent(article.excerpt);
+
+            document.getElementById('shareTwitter').href = `https://twitter.com/intent/tweet?url=${url}&text=${title}&via=bytecastnetwork`;
+            document.getElementById('shareFacebook').href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+            document.getElementById('shareLinkedIn').href = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+
+            // Load comments
+            loadComments(article.id);
+            
+            // Load related articles
+            loadRelatedArticles(article);
+        }
+
+        // Format article content into proper paragraphs and sections
+        function formatArticleContent(content) {
+            // Split content by double line breaks to create paragraphs
+            const paragraphs = content.split(/\n\s*\n/);
+            
+            let formattedContent = '';
+            paragraphs.forEach(paragraph => {
+                paragraph = paragraph.trim();
+                if (paragraph) {
+                    // Check if it's a heading (starts with # or is short and ends with :)
+                    if (paragraph.startsWith('# ')) {
+                        formattedContent += `<h2>${paragraph.substring(2)}</h2>`;
+                    } else if (paragraph.startsWith('## ')) {
+                        formattedContent += `<h3>${paragraph.substring(3)}</h3>`;
+                    } else if (paragraph.length < 100 && paragraph.endsWith(':')) {
+                        formattedContent += `<h3>${paragraph}</h3>`;
+                    } else {
+                        formattedContent += `<p>${paragraph}</p>`;
+                    }
+                }
+            });
+            
+            return formattedContent;
+        }
+
+        // Load comments for article
+        function loadComments(articleId) {
+            const articleComments = comments[articleId] || [];
+            const commentCount = document.getElementById('commentCount');
+            const commentsList = document.getElementById('commentsList');
+            
+            commentCount.textContent = articleComments.length;
+            
+            if (articleComments.length === 0) {
+                commentsList.innerHTML = '<p style="color: var(--gray-400); text-align: center; padding: 2rem;">No comments yet. Be the first to share your thoughts!</p>';
+            } else {
+                commentsList.innerHTML = articleComments.map(comment => `
+                    <div class="comment">
+                        <div class="comment-header">
+                            <div class="comment-author">${comment.name}</div>
+                            <div class="comment-date">${comment.date}</div>
+                        </div>
+                        <div class="comment-text">${comment.message}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Submit comment
+        function submitComment(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('commentName').value;
+            const email = document.getElementById('commentEmail').value;
+            const message = document.getElementById('commentMessage').value;
+            
+            if (!currentArticleId) return;
+            
+            // Initialize comments array for article if it doesn't exist
+            if (!comments[currentArticleId]) {
+                comments[currentArticleId] = [];
+            }
+            
+            // Add new comment
+            const newComment = {
+                id: Date.now(),
+                name: name,
+                email: email,
+                message: message,
+                date: new Date().toLocaleDateString() + ' at ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            };
+            
+            comments[currentArticleId].push(newComment);
+            
+            // Clear form
+            document.getElementById('commentName').value = '';
+            document.getElementById('commentEmail').value = '';
+            document.getElementById('commentMessage').value = '';
+            
+            // Reload comments
+            loadComments(currentArticleId);
+            
+            // Show success message
+            alert('Comment posted successfully!');
+        }
+
+        // Load related articles
+        function loadRelatedArticles(currentArticle) {
+            const relatedContainer = document.getElementById('relatedArticles');
+            
+            // Find articles in the same category, excluding current article
+            const related = articles
+                .filter(a => a.id !== currentArticle.id && a.category === currentArticle.category)
+                .slice(0, 3);
+            
+            if (related.length === 0) {
+                // If no related in same category, show latest articles
+                const latest = articles
+                    .filter(a => a.id !== currentArticle.id)
+                    .slice(0, 3);
+                related.push(...latest);
+            }
+            
+            relatedContainer.innerHTML = related.map(article => createArticleCard(article)).join('');
         }
 
         // Load content for specific pages
         function loadPageContent(pageId) {
-            console.log('Loading content for page:', pageId, 'Articles available:', articles.length);
-            
             switch(pageId) {
                 case 'home':
                     loadFeaturedArticles();
@@ -1351,7 +1884,7 @@
                 document.getElementById('adminPanel').classList.add('active');
                 closeAdminModal();
                 loadArticlesForManagement();
-                showSuccessMessage('Welcome to ByteCast Admin Panel!');
+                alert('Welcome to ByteCast Admin Panel!');
             } else {
                 alert('Invalid credentials. Please try again.');
             }
@@ -1361,16 +1894,6 @@
             isAdminLoggedIn = false;
             document.getElementById('adminPanel').classList.remove('active');
             alert('Logged out successfully.');
-        }
-
-        // Show success message
-        function showSuccessMessage(message) {
-            const msgElement = document.getElementById('successMessage');
-            msgElement.textContent = message;
-            msgElement.classList.add('show');
-            setTimeout(() => {
-                msgElement.classList.remove('show');
-            }, 3000);
         }
 
         // Admin tab switching
@@ -1384,469 +1907,270 @@
             const contents = document.querySelectorAll('.admin-content');
             contents.forEach(content => content.classList.remove('active'));
             document.getElementById('admin' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.add('active');
-            
-            // Load management articles if switching to manage tab
-            if (tabName === 'manage') {
-                loadArticlesForManagement();
-            }
         }
 
-        // Create new post - FIXED VERSION
+        // Handle image upload
+        function handleImageUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select a valid image file.');
+                    input.value = '';
+                    return;
+                }
+                
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Image size should be less than 5MB.');
+                    input.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64 = e.target.result;
+                    
+                    // Set the base64 data to the URL input (hidden from user)
+                    document.getElementById('postImage').value = base64;
+                    
+                    // Show preview
+                    showImagePreview(base64);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // Show image preview
+        function showImagePreview(imageSrc) {
+            const preview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            
+            previewImg.src = imageSrc;
+            preview.style.display = 'block';
+        }
+        
+        // Clear image
+        function clearImage() {
+            document.getElementById('postImageFile').value = '';
+            document.getElementById('postImage').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+        }
+
+        // Create new post
         function createPost(event) {
             event.preventDefault();
             
+            const imageValue = document.getElementById('postImage').value;
+            const content = document.getElementById('postContent').value;
+            
             const post = {
                 id: Date.now(),
-                title: document.getElementById('postTitle').value.trim(),
+                title: document.getElementById('postTitle').value,
                 category: document.getElementById('postCategory').value,
-                excerpt: document.getElementById('postExcerpt').value.trim(),
-                content: document.getElementById('postContent').value.trim(),
-                image: document.getElementById('postImage').value.trim() || null,
-                source: document.getElementById('postSource').value.trim() || 'ByteCast Network',
+                excerpt: document.getElementById('postExcerpt').value,
+                content: content,
+                image: imageValue || null,
+                source: document.getElementById('postSource').value || 'ByteCast Network',
                 date: new Date().toLocaleDateString(),
-                author: 'ByteCast Team'
+                author: 'ByteCast Team',
+                readTime: Math.ceil(content.split(' ').length / 200) // Estimated read time
             };
             
-            // Add to beginning of articles array
             articles.unshift(post);
             
-            // Save to storage (for persistence)
-            saveArticlesToStorage();
-            
-            // Clear form
+            // Clear form including image
             event.target.reset();
+            clearImage();
             
-            // Update all displays immediately
+            // Update all displays
             updateCategoryCounts();
-            loadPageContent(currentPage); // Refresh current page
-            loadFeaturedArticles(); // Refresh featured articles on home
-            loadArticlesForManagement(); // Refresh admin management view
+            loadFeaturedArticles();
+            loadPageContent(currentPage);
+            loadArticlesForManagement();
             
-            // Show success message
-            showSuccessMessage(`Article "${post.title}" published successfully!`);
-            
-            console.log('Article created:', post.title, 'Total articles:', articles.length);
+            alert('Article published successfully! The article is now visible on the website.');
         }
 
-        // Load articles for management - IMPROVED VERSION
+        // Load articles for management
         function loadArticlesForManagement() {
             const container = document.getElementById('articlesList');
-            
-            if (!container) {
-                console.error('Articles list container not found');
-                return;
-            }
-            
             if (articles.length === 0) {
-                container.innerHTML = '<p style="color: var(--gray-400); text-align: center; padding: 2rem;">No articles found. Create your first article!</p>';
+                container.innerHTML = '<p style="color: var(--gray-400);">No articles found.</p>';
                 return;
             }
             
             container.innerHTML = articles.map(article => `
                 <div class="article-item">
                     <h4>${article.title}</h4>
-                    <p><strong>Category:</strong> ${article.category} | <strong>Date:</strong> ${article.date} | <strong>Source:</strong> ${article.source}</p>
-                    <p>${article.excerpt.length > 100 ? article.excerpt.substring(0, 100) + '...' : article.excerpt}</p>
+                    <p><strong>Category:</strong> ${article.category} | <strong>Date:</strong> ${article.date}</p>
+                    <p>${article.excerpt.substring(0, 100)}...</p>
                     <div class="article-actions">
                         <button class="btn btn-sm" onclick="editArticle(${article.id})">Edit</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteArticle(${article.id})">Delete</button>
                     </div>
                 </div>
             `).join('');
-            
-            console.log('Management view loaded with', articles.length, 'articles');
         }
 
-        // Edit article (placeholder - can be expanded)
-        function editArticle(id) {
-            const article = articles.find(a => a.id === id);
-            if (article) {
-                // Switch to create tab and populate form
-                switchAdminTab('create');
-                document.getElementById('postTitle').value = article.title;
-                document.getElementById('postCategory').value = article.category;
-                document.getElementById('postExcerpt').value = article.excerpt;
-                document.getElementById('postContent').value = article.content;
-                document.getElementById('postImage').value = article.image || '';
-                document.getElementById('postSource').value = article.source;
-                
-                // Remove the original article (it will be re-added when form is submitted)
-                deleteArticle(id, false);
-            }
-        }
-
-        // Delete article - IMPROVED VERSION
-        function deleteArticle(id, showConfirm = true) {
-            if (showConfirm && !confirm('Are you sure you want to delete this article?')) {
-                return;
-            }
-            
-            const articleIndex = articles.findIndex(article => article.id === id);
-            if (articleIndex !== -1) {
-                const deletedArticle = articles[articleIndex];
-                articles.splice(articleIndex, 1);
-                
-                // Update storage
-                saveArticlesToStorage();
-                
-                // Update all displays
+        // Delete article
+        function deleteArticle(id) {
+            if (confirm('Are you sure you want to delete this article?')) {
+                articles = articles.filter(article => article.id !== id);
+                delete comments[id]; // Also delete comments for this article
                 loadArticlesForManagement();
                 updateCategoryCounts();
-                loadPageContent(currentPage);
                 loadFeaturedArticles();
-                
-                if (showConfirm) {
-                    showSuccessMessage(`Article "${deletedArticle.title}" deleted successfully!`);
-                }
-                
-                console.log('Article deleted:', deletedArticle.title, 'Remaining articles:', articles.length);
+                loadPageContent(currentPage);
+                alert('Article deleted successfully!');
             }
         }
 
         // Save settings
         function saveSettings() {
-            showSuccessMessage('Settings saved successfully!');
+            alert('Settings saved successfully!');
         }
 
-        // Load sample data - IMPROVED VERSION
+        // Load sample data with full content
         function loadSampleData() {
-            if (articles.length > 0) {
-                console.log('Articles already loaded:', articles.length);
-                return; // Don't reload if articles already exist
-            }
-            
             articles = [
                 {
                     id: 1,
                     title: "Revolutionary AI Breakthrough in Natural Language Processing",
                     category: "AI",
                     excerpt: "Scientists have developed a new AI model that can understand context with unprecedented accuracy, marking a significant leap in natural language processing technology.",
-                    content: "A groundbreaking study published today reveals a new AI architecture that processes human language with remarkable contextual understanding. The model, trained on diverse datasets, shows 40% improvement over existing systems in comprehension tasks. This advancement could revolutionize how we interact with AI assistants, making them more intuitive and helpful in everyday scenarios.",
+                    content: `# Revolutionary AI Breakthrough Changes Everything
+
+Artificial Intelligence has reached a new milestone with the development of an advanced language model that demonstrates unprecedented understanding of human context and nuance.
+
+## Key Breakthrough Features
+
+The new AI system incorporates several groundbreaking technologies:
+
+Revolutionary context awareness allows the AI to maintain coherent conversations across extended interactions. The system can remember previous exchanges and build upon them naturally.
+
+Enhanced reasoning capabilities enable complex problem-solving that was previously impossible. The AI can now work through multi-step logical processes with remarkable accuracy.
+
+Improved emotional intelligence helps the system recognize and respond appropriately to human emotions and social cues.
+
+## Real-World Applications
+
+This breakthrough has immediate implications across multiple industries:
+
+Healthcare professionals are already testing the system for medical diagnosis support. Early results show improved accuracy in identifying rare conditions.
+
+Educational institutions are exploring personalized learning applications. Students report higher engagement when interacting with the AI tutoring system.
+
+Customer service departments have seen dramatic improvements in response quality and customer satisfaction scores.
+
+## Future Implications
+
+Experts believe this represents just the beginning of a new era in AI development. The technology could revolutionize how we interact with computers and access information.
+
+The research team is already working on the next generation, which promises even more sophisticated capabilities and broader applications across various fields.`,
                     image: null,
                     source: "ByteCast Network",
                     date: new Date().toLocaleDateString(),
-                    author: "ByteCast Team"
+                    author: "ByteCast Team",
+                    readTime: 4
                 },
                 {
                     id: 2,
-                    title: "The Future of Smartphone Technology: What to Expect in 2025",
+                    title: "The Future of Smartphone Technology: What to Expect in 2024",
                     category: "Tech",
                     excerpt: "From foldable displays to advanced camera systems, we explore the cutting-edge technologies that will define the next generation of smartphones.",
-                    content: "The smartphone industry continues to push boundaries with innovative features. Foldable screens are becoming more durable, camera AI is reaching new heights, and battery technology is advancing rapidly. Our comprehensive analysis covers the top trends shaping mobile technology in the coming year.",
+                    content: `# The Future of Smartphone Technology
+
+The smartphone industry continues to evolve at breakneck speed, with 2024 promising to bring revolutionary changes that will reshape how we interact with our devices.
+
+## Foldable Display Revolution
+
+Foldable smartphones are no longer experimental curiosities. Major manufacturers have refined the technology to create devices that are both durable and practical.
+
+The latest generation of foldable phones features improved hinges that can withstand hundreds of thousands of fold cycles. Screen technology has advanced to eliminate visible creases while maintaining excellent brightness and color accuracy.
+
+Battery life has been optimized for dual-screen usage, with intelligent power management that adjusts based on how the device is being used.
+
+## Camera Technology Advances
+
+Smartphone photography continues to push boundaries with computational photography leading the charge.
+
+Periscope zoom lenses now offer optical zoom capabilities that rival dedicated cameras. Night mode photography has improved dramatically, capturing usable images in previously impossible lighting conditions.
+
+AI-powered scene recognition automatically optimizes camera settings for perfect shots every time. Video stabilization technology has reached professional-grade quality.
+
+## Processing Power and Efficiency
+
+The latest mobile processors deliver desktop-class performance while maintaining excellent battery life.
+
+5nm and 3nm manufacturing processes have allowed chip makers to pack more transistors into smaller spaces. AI processing units are now standard, enabling real-time language translation and advanced photo processing.
+
+## Connectivity and 5G Evolution
+
+5G networks are expanding globally, and smartphones are evolving to take full advantage of the increased bandwidth and reduced latency.
+
+Edge computing capabilities allow smartphones to process data closer to its source, reducing delays and improving performance for real-time applications.
+
+Wi-Fi 7 support ensures blazing-fast connectivity in compatible environments, with improved reliability in crowded areas.`,
                     image: null,
                     source: "ByteCast Network",
                     date: new Date().toLocaleDateString(),
-                    author: "ByteCast Team"
+                    author: "ByteCast Team",
+                    readTime: 3
                 },
                 {
                     id: 3,
                     title: "Startup Innovation: How Young Companies Are Reshaping Industries",
                     category: "Innovation",
                     excerpt: "Discover how innovative startups are disrupting traditional industries and creating new opportunities in the digital economy.",
-                    content: "From fintech to healthtech, startups are leveraging cutting-edge technology to solve real-world problems. We examine the most promising startups of 2025 and their potential to transform entire sectors. These companies are not just creating products; they're reimagining how we live and work.",
-                    image: null,
-                    source: "ByteCast Network",
-                    date: new Date().toLocaleDateString(),
-                    author: "ByteCast Team"
-                },
-                {
-                    id: 4,
-                    title: "Complete Review: Latest Gaming Laptop Performance Analysis",
-                    category: "Reviews",
-                    excerpt: "We put the latest gaming laptops through rigorous testing to determine which offers the best performance for your money.",
-                    content: "Our comprehensive testing suite evaluates the top gaming laptops of 2025. From frame rates to thermal performance, we cover everything you need to know before making your next purchase. Detailed benchmarks, real-world gaming tests, and value analysis included.",
-                    image: null,
-                    source: "ByteCast Network",
-                    date: new Date().toLocaleDateString(),
-                    author: "ByteCast Team"
-                },
-                {
-                    id: 5,
-                    title: "Quantum Computing: Breakthrough Achievements in 2025",
-                    category: "Tech",
-                    excerpt: "Major tech companies announce significant progress in quantum computing, bringing us closer to practical quantum applications.",
-                    content: "This year has seen remarkable progress in quantum computing with multiple companies achieving new milestones. From improved qubit stability to novel quantum algorithms, the field is rapidly advancing toward practical applications in cryptography, optimization, and scientific simulation.",
-                    image: null,
-                    source: "ByteCast Network",
-                    date: new Date().toLocaleDateString(),
-                    author: "ByteCast Team"
-                },
-                {
-                    id: 6,
-                    title: "AI Ethics: New Guidelines for Responsible AI Development",
-                    category: "AI",
-                    excerpt: "Industry leaders collaborate on comprehensive guidelines to ensure AI development remains ethical and beneficial for society.",
-                    content: "As AI becomes more prevalent, the need for ethical guidelines becomes crucial. Leading tech companies and researchers have unveiled new frameworks for responsible AI development, addressing bias, privacy, and societal impact. These guidelines aim to balance innovation with social responsibility.",
-                    image: null,
-                    source: "ByteCast Network",
-                    date: new Date().toLocaleDateString(),
-                    author: "ByteCast Team"
-                }
-            ];
-            
-            console.log('Sample data loaded:', articles.length, 'articles');
-        }
+                    content: `# Startup Innovation Transforms Traditional Industries
 
-        // Load featured articles for home page - IMPROVED VERSION
-        function loadFeaturedArticles() {
-            const container = document.getElementById('featuredArticles');
-            if (!container) {
-                console.error('Featured articles container not found');
-                return;
-            }
-            
-            const featured = articles.slice(0, 6); // Show up to 6 featured articles
-            
-            if (featured.length === 0) {
-                container.innerHTML = '<p style="color: var(--gray-400); text-align: center; grid-column: 1/-1;">No articles available. Check back soon for updates!</p>';
-                return;
-            }
-            
-            container.innerHTML = featured.map(article => createArticleCard(article)).join('');
-            console.log('Featured articles loaded:', featured.length);
-        }
+The modern startup ecosystem is characterized by rapid innovation and disruptive thinking that challenges established business models across every industry.
 
-        // Load articles by category - IMPROVED VERSION
-        function loadCategoryArticles(category, containerId) {
-            const container = document.getElementById(containerId);
-            if (!container) {
-                console.error(`Container ${containerId} not found`);
-                return;
-            }
-            
-            const categoryArticles = articles.filter(article => 
-                article.category.toLowerCase() === category.toLowerCase()
-            );
-            
-            if (categoryArticles.length === 0) {
-                container.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
-                        <p style="color: var(--gray-400); font-size: 1.2rem; margin-bottom: 1rem;">No articles found in ${category} category.</p>
-                        <p style="color: var(--gray-500);">Check back soon for new content!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = categoryArticles.map(article => createArticleCard(article)).join('');
-            console.log(`${category} articles loaded:`, categoryArticles.length);
-        }
+## The New Wave of Digital Disruption
 
-        // Create article card HTML - IMPROVED VERSION
-        function createArticleCard(article) {
-            const truncatedExcerpt = article.excerpt.length > 150 ? 
-                article.excerpt.substring(0, 150) + '...' : article.excerpt;
-                
-            return `
-                <div class="article-card" onclick="openArticleModal(${article.id})">
-                    <div class="article-image">
-                        ${article.image ? 
-                            `<img src="${article.image}" alt="${article.title}" style="width: 100%; height: 100%; object-fit: cover;">` : 
-                            `<span style="font-size: 3rem;">${getCategoryIcon(article.category)}</span>`
-                        }
-                    </div>
-                    <div class="article-content">
-                        <span class="article-category">${article.category}</span>
-                        <h3 class="article-title">${article.title}</h3>
-                        <p class="article-excerpt">${truncatedExcerpt}</p>
-                        <div class="article-meta">
-                            <span>${article.date}</span>
-                            <span>${article.source}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
+Today's startups are leveraging advanced technologies to create solutions that were unimaginable just a few years ago.
 
-        // Open article modal (placeholder for future implementation)
-        function openArticleModal(articleId) {
-            const article = articles.find(a => a.id === articleId);
-            if (article) {
-                // For now, just log the article
-                console.log('Opening article:', article.title);
-                // Future: Show full article in modal
-                alert(`Opening article: "${article.title}"\n\n${article.content}`);
-            }
-        }
+Artificial intelligence and machine learning form the backbone of many new ventures, enabling automation and insights that drive efficiency and create entirely new business models.
 
-        // Get category icon
-        function getCategoryIcon(category) {
-            const icons = {
-                'AI': '🤖',
-                'Tech': '📱',
-                'Innovation': '💡',
-                'Reviews': '⭐',
-                'News': '📰'
-            };
-            return icons[category] || '📄';
-        }
+Cloud computing has democratized access to enterprise-grade infrastructure, allowing small teams to build and scale global applications without massive upfront investments.
 
-        // Update category counts - IMPROVED VERSION
-        function updateCategoryCounts() {
-            const counts = {
-                AI: articles.filter(a => a.category === 'AI').length,
-                Tech: articles.filter(a => a.category === 'Tech').length,
-                Innovation: articles.filter(a => a.category === 'Innovation').length,
-                Reviews: articles.filter(a => a.category === 'Reviews').length
-            };
-            
-            const elements = {
-                aiCount: document.getElementById('aiCount'),
-                techCount: document.getElementById('techCount'),
-                innovationCount: document.getElementById('innovationCount'),
-                reviewsCount: document.getElementById('reviewsCount')
-            };
-            
-            if (elements.aiCount) elements.aiCount.textContent = `${counts.AI} articles`;
-            if (elements.techCount) elements.techCount.textContent = `${counts.Tech} articles`;
-            if (elements.innovationCount) elements.innovationCount.textContent = `${counts.Innovation} articles`;
-            if (elements.reviewsCount) elements.reviewsCount.textContent = `${counts.Reviews} articles`;
-            
-            console.log('Category counts updated:', counts);
-        }
+## Fintech Revolution
 
-        // Affiliate popup management
-        function startAffiliatePopups() {
-            // Show AliExpress ad after 5 seconds
-            setTimeout(() => showPopup('aliexpressAd'), 5000);
-            
-            // Show Coohom ad after 15 seconds
-            setTimeout(() => showPopup('coohomAd'), 15000);
-            
-            // Show RedMagic ad after 25 seconds
-            setTimeout(() => showPopup('redmagicAd'), 25000);
-            
-            // Rotate ads every 30 seconds
-            setInterval(() => {
-                const ads = ['aliexpressAd', 'coohomAd', 'redmagicAd'];
-                const randomAd = ads[Math.floor(Math.random() * ads.length)];
-                showPopup(randomAd);
-            }, 30000);
-        }
+Financial technology startups have transformed how we manage money, make payments, and access financial services.
 
-        function showPopup(adId) {
-            const popup = document.getElementById(adId);
-            if (popup) {
-                popup.classList.add('show');
-                
-                // Auto-hide after 10 seconds
-                setTimeout(() => {
-                    popup.classList.remove('show');
-                }, 10000);
-            }
-        }
+Digital banks offer seamless mobile experiences with lower fees and better customer service than traditional institutions. Cryptocurrency and blockchain technologies are creating new forms of digital assets and decentralized financial systems.
 
-        function closePopup(adId) {
-            const popup = document.getElementById(adId);
-            if (popup) {
-                popup.classList.remove('show');
-            }
-        }
+Investment platforms have made stock trading and wealth management accessible to everyone, not just wealthy individuals with professional advisors.
 
-        // Contact form handler
-        function handleContact(event) {
-            event.preventDefault();
-            alert('Thank you for your message! We will get back to you soon.');
-            event.target.reset();
-        }
+## Healthcare Innovation
 
-        // Newsletter handler
-        function handleNewsletter(event) {
-            event.preventDefault();
-            alert('Thank you for subscribing to our newsletter!');
-            event.target.reset();
-        }
+Healthcare startups are addressing some of society's most pressing medical challenges through technology.
 
-        // Click handlers for popup ads
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.popup-ad') && !e.target.closest('.popup-ad-close')) {
-                // Track affiliate click (you can add analytics here)
-                console.log('Affiliate ad clicked:', e.target.closest('.popup-ad').id);
-            }
-        });
+Telemedicine platforms expanded rapidly during the pandemic and continue to provide convenient access to medical care. AI-powered diagnostic tools help doctors identify diseases earlier and more accurately.
 
-        // Smooth scrolling for internal links
-        document.addEventListener('click', function(e) {
-            if (e.target.matches('a[href^="#"]')) {
-                e.preventDefault();
-                const target = document.querySelector(e.target.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            }
-        });
+Personalized medicine uses genetic data to tailor treatments to individual patients, improving outcomes and reducing side effects.
 
-        // Initialize Google AdSense (placeholder)
-        function initializeAds() {
-            try {
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            } catch (e) {
-                console.log('AdSense not loaded');
-            }
-        }
+## Sustainability and Green Technology
 
-        // Call ad initialization after page load
-        window.addEventListener('load', initializeAds);
+Environmental concerns have sparked a wave of innovation in clean technology and sustainable solutions.
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            // Escape key closes admin modal and popups
-            if (e.key === 'Escape') {
-                closeAdminModal();
-                document.querySelectorAll('.popup-ad.show').forEach(popup => {
-                    popup.classList.remove('show');
-                });
-            }
-            
-            // Quick navigation shortcuts (Alt + number)
-            if (e.altKey) {
-                switch(e.key) {
-                    case '1':
-                        e.preventDefault();
-                        showPage('home');
-                        break;
-                    case '2':
-                        e.preventDefault();
-                        showPage('tech');
-                        break;
-                    case '3':
-                        e.preventDefault();
-                        showPage('ai');
-                        break;
-                    case '4':
-                        e.preventDefault();
-                        showPage('reviews');
-                        break;
-                    case '5':
-                        e.preventDefault();
-                        showPage('innovation');
-                        break;
-                    case '6':
-                        e.preventDefault();
-                        showPage('contact');
-                        break;
-                }
-            }
-        });
+Electric vehicle startups are challenging traditional automakers with innovative designs and direct-to-consumer sales models. Energy storage companies are developing better batteries for renewable energy systems.
 
-        // Performance monitoring
-        function trackPageView(page) {
-            console.log(`Page view: ${page} - Articles: ${articles.length}`);
-        }
+Sustainable packaging solutions help companies reduce their environmental impact while meeting consumer demands for eco-friendly products.
 
-        // Error handling for failed image loads
-        document.addEventListener('error', function(e) {
-            if (e.target.tagName === 'IMG') {
-                e.target.style.display = 'none';
-                console.log('Image failed to load:', e.target.src);
-            }
-        }, true);
+## The Investment Landscape
 
-        // Initialize everything when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            trackPageView('home');
-            console.log('ByteCast Network initialized successfully!');
-        });
-    </script>
-</body>
-</html>
+Venture capital funding continues to flow into promising startups, with investors seeking companies that can scale quickly and capture significant market share.
+
+Early-stage funding rounds are becoming larger as investors compete for equity in the most promising companies. Corporate venture capital arms help established companies stay connected to emerging trends and technologies.
+
+Government initiatives and tax incentives support startup formation in strategic industries like clean energy, healthcare, and advanced manufacturing.
+
+## Challenges and Opportunities
+
+While the startup ecosystem offers tremendous opportunities, entrepreneurs face significant challenges in building sustainable businesses.
+
+Competition is fierce, with multiple startups often pursuing similar solutions in hot markets. Talent acquisition remains difficult as established companies compete for the same skilled workers.
+
+Regulatory compliance becomes increasingly complex as startups scale and enter new markets. However, these challenges also create opportunities for innovative solutions and new business models.
