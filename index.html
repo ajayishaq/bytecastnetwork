@@ -592,6 +592,20 @@
             font-size: 0.8rem;
         }
 
+        /* Success Message */
+        .success-message {
+            background: #10b981;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
         /* Popup Affiliate Ads */
         .popup-ad {
             position: fixed;
@@ -897,6 +911,7 @@
 
             <!-- Create Post Tab -->
             <div id="adminCreate" class="admin-content active">
+                <div id="successMessage" class="success-message"></div>
                 <h3 style="color: var(--white); margin-bottom: 1rem;">Create New Article</h3>
                 <form class="content-form" onsubmit="createPost(event)">
                     <div class="form-group">
@@ -923,18 +938,8 @@
                         <textarea id="postContent" rows="10" required></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Article Image</label>
-                        <div style="display: flex; gap: 1rem; align-items: end;">
-                            <div style="flex: 1;">
-                                <input type="file" id="postImageFile" accept="image/*" onchange="handleImageUpload(this)" style="margin-bottom: 0.5rem;">
-                                <input type="url" id="postImage" placeholder="Or paste image URL">
-                            </div>
-                            <button type="button" onclick="clearImage()" style="padding: 0.5rem; background: var(--gray-600); color: var(--white); border: none; border-radius: 5px;">Clear</button>
-                        </div>
-                        <div id="imagePreview" style="margin-top: 1rem; display: none;">
-                            <img id="previewImg" style="max-width: 200px; max-height: 150px; border-radius: 8px; border: 2px solid var(--gray-600);">
-                            <p style="color: var(--gray-400); font-size: 0.8rem; margin-top: 0.5rem;">Image preview</p>
-                        </div>
+                        <label>Image URL (optional)</label>
+                        <input type="url" id="postImage">
                     </div>
                     <div class="form-group">
                         <label>Source (optional)</label>
@@ -1257,12 +1262,25 @@
         const ADMIN_USERNAME = 'bytecast_admin';
         const ADMIN_PASSWORD = 'ByteCast#2024!Secure';
 
+        // Storage functions (using JavaScript variables for persistence within session)
+        function saveArticlesToStorage() {
+            // In a real application, this would save to a database
+            // For now, articles persist only during the session
+            console.log('Articles saved to memory:', articles.length);
+        }
+
+        function loadArticlesFromStorage() {
+            // In a real application, this would load from a database
+            console.log('Articles loaded from memory:', articles.length);
+        }
+
         // Initialize the website
         document.addEventListener('DOMContentLoaded', function() {
             loadSampleData();
-            loadFeaturedArticles(); // Load articles immediately
             updateCategoryCounts();
+            loadPageContent('home');
             startAffiliatePopups();
+            console.log('ByteCast Network initialized with', articles.length, 'articles');
         });
 
         // Secret admin access via Ctrl+Shift+A (completely hidden from regular users)
@@ -1292,6 +1310,8 @@
 
         // Load content for specific pages
         function loadPageContent(pageId) {
+            console.log('Loading content for page:', pageId, 'Articles available:', articles.length);
+            
             switch(pageId) {
                 case 'home':
                     loadFeaturedArticles();
@@ -1331,7 +1351,7 @@
                 document.getElementById('adminPanel').classList.add('active');
                 closeAdminModal();
                 loadArticlesForManagement();
-                alert('Welcome to ByteCast Admin Panel!');
+                showSuccessMessage('Welcome to ByteCast Admin Panel!');
             } else {
                 alert('Invalid credentials. Please try again.');
             }
@@ -1341,6 +1361,16 @@
             isAdminLoggedIn = false;
             document.getElementById('adminPanel').classList.remove('active');
             alert('Logged out successfully.');
+        }
+
+        // Show success message
+        function showSuccessMessage(message) {
+            const msgElement = document.getElementById('successMessage');
+            msgElement.textContent = message;
+            msgElement.classList.add('show');
+            setTimeout(() => {
+                msgElement.classList.remove('show');
+            }, 3000);
         }
 
         // Admin tab switching
@@ -1354,136 +1384,144 @@
             const contents = document.querySelectorAll('.admin-content');
             contents.forEach(content => content.classList.remove('active'));
             document.getElementById('admin' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.add('active');
-        }
-
-        // Handle image upload
-        function handleImageUpload(input) {
-            const file = input.files[0];
-            if (file) {
-                // Validate file type
-                if (!file.type.startsWith('image/')) {
-                    alert('Please select a valid image file.');
-                    input.value = '';
-                    return;
-                }
-                
-                // Validate file size (max 5MB)
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('Image size should be less than 5MB.');
-                    input.value = '';
-                    return;
-                }
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const base64 = e.target.result;
-                    
-                    // Set the base64 data to the URL input (hidden from user)
-                    document.getElementById('postImage').value = base64;
-                    
-                    // Show preview
-                    showImagePreview(base64);
-                };
-                reader.readAsDataURL(file);
+            
+            // Load management articles if switching to manage tab
+            if (tabName === 'manage') {
+                loadArticlesForManagement();
             }
         }
-        
-        // Show image preview
-        function showImagePreview(imageSrc) {
-            const preview = document.getElementById('imagePreview');
-            const previewImg = document.getElementById('previewImg');
-            
-            previewImg.src = imageSrc;
-            preview.style.display = 'block';
-        }
-        
-        // Clear image
-        function clearImage() {
-            document.getElementById('postImageFile').value = '';
-            document.getElementById('postImage').value = '';
-            document.getElementById('imagePreview').style.display = 'none';
-        }
 
-        // Create new post
+        // Create new post - FIXED VERSION
         function createPost(event) {
             event.preventDefault();
             
-            const imageValue = document.getElementById('postImage').value;
-            
             const post = {
                 id: Date.now(),
-                title: document.getElementById('postTitle').value,
+                title: document.getElementById('postTitle').value.trim(),
                 category: document.getElementById('postCategory').value,
-                excerpt: document.getElementById('postExcerpt').value,
-                content: document.getElementById('postContent').value,
-                image: imageValue || null,
-                source: document.getElementById('postSource').value || 'ByteCast Network',
+                excerpt: document.getElementById('postExcerpt').value.trim(),
+                content: document.getElementById('postContent').value.trim(),
+                image: document.getElementById('postImage').value.trim() || null,
+                source: document.getElementById('postSource').value.trim() || 'ByteCast Network',
                 date: new Date().toLocaleDateString(),
                 author: 'ByteCast Team'
             };
             
+            // Add to beginning of articles array
             articles.unshift(post);
             
-            // Clear form including image
+            // Save to storage (for persistence)
+            saveArticlesToStorage();
+            
+            // Clear form
             event.target.reset();
-            clearImage();
             
-            // Update all displays
+            // Update all displays immediately
             updateCategoryCounts();
-            loadFeaturedArticles(); // Always update home page
-            loadPageContent(currentPage); // Update current page
-            loadArticlesForManagement(); // Update admin management
+            loadPageContent(currentPage); // Refresh current page
+            loadFeaturedArticles(); // Refresh featured articles on home
+            loadArticlesForManagement(); // Refresh admin management view
             
-            alert('Article published successfully! The article is now visible on the website.');
+            // Show success message
+            showSuccessMessage(`Article "${post.title}" published successfully!`);
+            
+            console.log('Article created:', post.title, 'Total articles:', articles.length);
         }
 
-        // Load articles for management
+        // Load articles for management - IMPROVED VERSION
         function loadArticlesForManagement() {
             const container = document.getElementById('articlesList');
+            
+            if (!container) {
+                console.error('Articles list container not found');
+                return;
+            }
+            
             if (articles.length === 0) {
-                container.innerHTML = '<p style="color: var(--gray-400);">No articles found.</p>';
+                container.innerHTML = '<p style="color: var(--gray-400); text-align: center; padding: 2rem;">No articles found. Create your first article!</p>';
                 return;
             }
             
             container.innerHTML = articles.map(article => `
                 <div class="article-item">
                     <h4>${article.title}</h4>
-                    <p><strong>Category:</strong> ${article.category} | <strong>Date:</strong> ${article.date}</p>
-                    <p>${article.excerpt.substring(0, 100)}...</p>
+                    <p><strong>Category:</strong> ${article.category} | <strong>Date:</strong> ${article.date} | <strong>Source:</strong> ${article.source}</p>
+                    <p>${article.excerpt.length > 100 ? article.excerpt.substring(0, 100) + '...' : article.excerpt}</p>
                     <div class="article-actions">
                         <button class="btn btn-sm" onclick="editArticle(${article.id})">Edit</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteArticle(${article.id})">Delete</button>
                     </div>
                 </div>
             `).join('');
+            
+            console.log('Management view loaded with', articles.length, 'articles');
         }
 
-        // Delete article
-        function deleteArticle(id) {
-            if (confirm('Are you sure you want to delete this article?')) {
-                articles = articles.filter(article => article.id !== id);
+        // Edit article (placeholder - can be expanded)
+        function editArticle(id) {
+            const article = articles.find(a => a.id === id);
+            if (article) {
+                // Switch to create tab and populate form
+                switchAdminTab('create');
+                document.getElementById('postTitle').value = article.title;
+                document.getElementById('postCategory').value = article.category;
+                document.getElementById('postExcerpt').value = article.excerpt;
+                document.getElementById('postContent').value = article.content;
+                document.getElementById('postImage').value = article.image || '';
+                document.getElementById('postSource').value = article.source;
+                
+                // Remove the original article (it will be re-added when form is submitted)
+                deleteArticle(id, false);
+            }
+        }
+
+        // Delete article - IMPROVED VERSION
+        function deleteArticle(id, showConfirm = true) {
+            if (showConfirm && !confirm('Are you sure you want to delete this article?')) {
+                return;
+            }
+            
+            const articleIndex = articles.findIndex(article => article.id === id);
+            if (articleIndex !== -1) {
+                const deletedArticle = articles[articleIndex];
+                articles.splice(articleIndex, 1);
+                
+                // Update storage
+                saveArticlesToStorage();
+                
+                // Update all displays
                 loadArticlesForManagement();
                 updateCategoryCounts();
-                loadFeaturedArticles(); // Update home page
-                loadPageContent(currentPage); // Update current page
-                alert('Article deleted successfully!');
+                loadPageContent(currentPage);
+                loadFeaturedArticles();
+                
+                if (showConfirm) {
+                    showSuccessMessage(`Article "${deletedArticle.title}" deleted successfully!`);
+                }
+                
+                console.log('Article deleted:', deletedArticle.title, 'Remaining articles:', articles.length);
             }
         }
 
         // Save settings
         function saveSettings() {
-            alert('Settings saved successfully!');
+            showSuccessMessage('Settings saved successfully!');
         }
 
-        // Load sample data
+        // Load sample data - IMPROVED VERSION
         function loadSampleData() {
+            if (articles.length > 0) {
+                console.log('Articles already loaded:', articles.length);
+                return; // Don't reload if articles already exist
+            }
+            
             articles = [
                 {
                     id: 1,
                     title: "Revolutionary AI Breakthrough in Natural Language Processing",
                     category: "AI",
                     excerpt: "Scientists have developed a new AI model that can understand context with unprecedented accuracy, marking a significant leap in natural language processing technology.",
-                    content: "Full article content here...",
+                    content: "A groundbreaking study published today reveals a new AI architecture that processes human language with remarkable contextual understanding. The model, trained on diverse datasets, shows 40% improvement over existing systems in comprehension tasks. This advancement could revolutionize how we interact with AI assistants, making them more intuitive and helpful in everyday scenarios.",
                     image: null,
                     source: "ByteCast Network",
                     date: new Date().toLocaleDateString(),
@@ -1491,10 +1529,10 @@
                 },
                 {
                     id: 2,
-                    title: "The Future of Smartphone Technology: What to Expect in 2024",
+                    title: "The Future of Smartphone Technology: What to Expect in 2025",
                     category: "Tech",
                     excerpt: "From foldable displays to advanced camera systems, we explore the cutting-edge technologies that will define the next generation of smartphones.",
-                    content: "Full article content here...",
+                    content: "The smartphone industry continues to push boundaries with innovative features. Foldable screens are becoming more durable, camera AI is reaching new heights, and battery technology is advancing rapidly. Our comprehensive analysis covers the top trends shaping mobile technology in the coming year.",
                     image: null,
                     source: "ByteCast Network",
                     date: new Date().toLocaleDateString(),
@@ -1505,7 +1543,7 @@
                     title: "Startup Innovation: How Young Companies Are Reshaping Industries",
                     category: "Innovation",
                     excerpt: "Discover how innovative startups are disrupting traditional industries and creating new opportunities in the digital economy.",
-                    content: "Full article content here...",
+                    content: "From fintech to healthtech, startups are leveraging cutting-edge technology to solve real-world problems. We examine the most promising startups of 2025 and their potential to transform entire sectors. These companies are not just creating products; they're reimagining how we live and work.",
                     image: null,
                     source: "ByteCast Network",
                     date: new Date().toLocaleDateString(),
@@ -1516,47 +1554,101 @@
                     title: "Complete Review: Latest Gaming Laptop Performance Analysis",
                     category: "Reviews",
                     excerpt: "We put the latest gaming laptops through rigorous testing to determine which offers the best performance for your money.",
-                    content: "Full article content here...",
+                    content: "Our comprehensive testing suite evaluates the top gaming laptops of 2025. From frame rates to thermal performance, we cover everything you need to know before making your next purchase. Detailed benchmarks, real-world gaming tests, and value analysis included.",
+                    image: null,
+                    source: "ByteCast Network",
+                    date: new Date().toLocaleDateString(),
+                    author: "ByteCast Team"
+                },
+                {
+                    id: 5,
+                    title: "Quantum Computing: Breakthrough Achievements in 2025",
+                    category: "Tech",
+                    excerpt: "Major tech companies announce significant progress in quantum computing, bringing us closer to practical quantum applications.",
+                    content: "This year has seen remarkable progress in quantum computing with multiple companies achieving new milestones. From improved qubit stability to novel quantum algorithms, the field is rapidly advancing toward practical applications in cryptography, optimization, and scientific simulation.",
+                    image: null,
+                    source: "ByteCast Network",
+                    date: new Date().toLocaleDateString(),
+                    author: "ByteCast Team"
+                },
+                {
+                    id: 6,
+                    title: "AI Ethics: New Guidelines for Responsible AI Development",
+                    category: "AI",
+                    excerpt: "Industry leaders collaborate on comprehensive guidelines to ensure AI development remains ethical and beneficial for society.",
+                    content: "As AI becomes more prevalent, the need for ethical guidelines becomes crucial. Leading tech companies and researchers have unveiled new frameworks for responsible AI development, addressing bias, privacy, and societal impact. These guidelines aim to balance innovation with social responsibility.",
                     image: null,
                     source: "ByteCast Network",
                     date: new Date().toLocaleDateString(),
                     author: "ByteCast Team"
                 }
             ];
+            
+            console.log('Sample data loaded:', articles.length, 'articles');
         }
 
-        // Load featured articles for home page
+        // Load featured articles for home page - IMPROVED VERSION
         function loadFeaturedArticles() {
             const container = document.getElementById('featuredArticles');
-            const featured = articles.slice(0, 6);
+            if (!container) {
+                console.error('Featured articles container not found');
+                return;
+            }
+            
+            const featured = articles.slice(0, 6); // Show up to 6 featured articles
+            
+            if (featured.length === 0) {
+                container.innerHTML = '<p style="color: var(--gray-400); text-align: center; grid-column: 1/-1;">No articles available. Check back soon for updates!</p>';
+                return;
+            }
             
             container.innerHTML = featured.map(article => createArticleCard(article)).join('');
+            console.log('Featured articles loaded:', featured.length);
         }
 
-        // Load articles by category
+        // Load articles by category - IMPROVED VERSION
         function loadCategoryArticles(category, containerId) {
             const container = document.getElementById(containerId);
-            const categoryArticles = articles.filter(article => article.category === category);
+            if (!container) {
+                console.error(`Container ${containerId} not found`);
+                return;
+            }
+            
+            const categoryArticles = articles.filter(article => 
+                article.category.toLowerCase() === category.toLowerCase()
+            );
             
             if (categoryArticles.length === 0) {
-                container.innerHTML = '<p style="color: var(--gray-400); text-align: center;">No articles found in this category.</p>';
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                        <p style="color: var(--gray-400); font-size: 1.2rem; margin-bottom: 1rem;">No articles found in ${category} category.</p>
+                        <p style="color: var(--gray-500);">Check back soon for new content!</p>
+                    </div>
+                `;
                 return;
             }
             
             container.innerHTML = categoryArticles.map(article => createArticleCard(article)).join('');
+            console.log(`${category} articles loaded:`, categoryArticles.length);
         }
 
-        // Create article card HTML
+        // Create article card HTML - IMPROVED VERSION
         function createArticleCard(article) {
+            const truncatedExcerpt = article.excerpt.length > 150 ? 
+                article.excerpt.substring(0, 150) + '...' : article.excerpt;
+                
             return `
-                <div class="article-card">
+                <div class="article-card" onclick="openArticleModal(${article.id})">
                     <div class="article-image">
-                        ${article.image ? `<img src="${article.image}" alt="${article.title}" style="width: 100%; height: 100%; object-fit: cover;">` : `<span style="font-size: 3rem;">${getCategoryIcon(article.category)}</span>`}
+                        ${article.image ? 
+                            `<img src="${article.image}" alt="${article.title}" style="width: 100%; height: 100%; object-fit: cover;">` : 
+                            `<span style="font-size: 3rem;">${getCategoryIcon(article.category)}</span>`
+                        }
                     </div>
                     <div class="article-content">
                         <span class="article-category">${article.category}</span>
                         <h3 class="article-title">${article.title}</h3>
-                        <p class="article-excerpt">${article.excerpt}</p>
+                        <p class="article-excerpt">${truncatedExcerpt}</p>
                         <div class="article-meta">
                             <span>${article.date}</span>
                             <span>${article.source}</span>
@@ -1564,6 +1656,17 @@
                     </div>
                 </div>
             `;
+        }
+
+        // Open article modal (placeholder for future implementation)
+        function openArticleModal(articleId) {
+            const article = articles.find(a => a.id === articleId);
+            if (article) {
+                // For now, just log the article
+                console.log('Opening article:', article.title);
+                // Future: Show full article in modal
+                alert(`Opening article: "${article.title}"\n\n${article.content}`);
+            }
         }
 
         // Get category icon
@@ -1578,7 +1681,7 @@
             return icons[category] || '📄';
         }
 
-        // Update category counts
+        // Update category counts - IMPROVED VERSION
         function updateCategoryCounts() {
             const counts = {
                 AI: articles.filter(a => a.category === 'AI').length,
@@ -1587,10 +1690,19 @@
                 Reviews: articles.filter(a => a.category === 'Reviews').length
             };
             
-            document.getElementById('aiCount').textContent = `${counts.AI} articles`;
-            document.getElementById('techCount').textContent = `${counts.Tech} articles`;
-            document.getElementById('innovationCount').textContent = `${counts.Innovation} articles`;
-            document.getElementById('reviewsCount').textContent = `${counts.Reviews} articles`;
+            const elements = {
+                aiCount: document.getElementById('aiCount'),
+                techCount: document.getElementById('techCount'),
+                innovationCount: document.getElementById('innovationCount'),
+                reviewsCount: document.getElementById('reviewsCount')
+            };
+            
+            if (elements.aiCount) elements.aiCount.textContent = `${counts.AI} articles`;
+            if (elements.techCount) elements.techCount.textContent = `${counts.Tech} articles`;
+            if (elements.innovationCount) elements.innovationCount.textContent = `${counts.Innovation} articles`;
+            if (elements.reviewsCount) elements.reviewsCount.textContent = `${counts.Reviews} articles`;
+            
+            console.log('Category counts updated:', counts);
         }
 
         // Affiliate popup management
@@ -1614,16 +1726,21 @@
 
         function showPopup(adId) {
             const popup = document.getElementById(adId);
-            popup.classList.add('show');
-            
-            // Auto-hide after 10 seconds
-            setTimeout(() => {
-                popup.classList.remove('show');
-            }, 10000);
+            if (popup) {
+                popup.classList.add('show');
+                
+                // Auto-hide after 10 seconds
+                setTimeout(() => {
+                    popup.classList.remove('show');
+                }, 10000);
+            }
         }
 
         function closePopup(adId) {
-            document.getElementById(adId).classList.remove('show');
+            const popup = document.getElementById(adId);
+            if (popup) {
+                popup.classList.remove('show');
+            }
         }
 
         // Contact form handler
@@ -1712,69 +1829,9 @@
             }
         });
 
-        // Mobile menu toggle (for future mobile menu implementation)
-        function toggleMobileMenu() {
-            const navLinks = document.querySelector('.nav-links');
-            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
-        }
-
-        // Lazy loading for images (when implemented)
-        function lazyLoadImages() {
-            const images = document.querySelectorAll('img[data-src]');
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        img.src = img.dataset.src;
-                        img.classList.remove('lazy');
-                        imageObserver.unobserve(img);
-                    }
-                });
-            });
-
-            images.forEach(img => imageObserver.observe(img));
-        }
-
-        // Search functionality (for future implementation)
-        function searchArticles(query) {
-            return articles.filter(article => 
-                article.title.toLowerCase().includes(query.toLowerCase()) ||
-                article.excerpt.toLowerCase().includes(query.toLowerCase()) ||
-                article.category.toLowerCase().includes(query.toLowerCase())
-            );
-        }
-
-        // Social sharing functions
-        function shareArticle(articleId, platform) {
-            const article = articles.find(a => a.id === articleId);
-            if (!article) return;
-
-            const url = encodeURIComponent(window.location.href);
-            const title = encodeURIComponent(article.title);
-            const text = encodeURIComponent(article.excerpt);
-
-            let shareUrl;
-            switch(platform) {
-                case 'twitter':
-                    shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}&via=bytecastnetwork`;
-                    break;
-                case 'facebook':
-                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-                    break;
-                case 'linkedin':
-                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
-                    break;
-                default:
-                    return;
-            }
-
-            window.open(shareUrl, '_blank', 'width=600,height=400');
-        }
-
         // Performance monitoring
         function trackPageView(page) {
-            // Add analytics tracking here
-            console.log(`Page view: ${page}`);
+            console.log(`Page view: ${page} - Articles: ${articles.length}`);
         }
 
         // Error handling for failed image loads
@@ -1787,12 +1844,7 @@
 
         // Initialize everything when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            // Track initial page view
             trackPageView('home');
-            
-            // Initialize lazy loading
-            lazyLoadImages();
-            
             console.log('ByteCast Network initialized successfully!');
         });
     </script>
