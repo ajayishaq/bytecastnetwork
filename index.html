@@ -852,7 +852,7 @@
                 </div>
                 <div class="form-group">
                     <button class="btn" onclick="adminLogin()">Login</button>
-                    <button class="btn btn-danger" onclick="closeAdminModal()">Cancel</button>
+                    <button class="btn btn-danger" onclick="closeAdminModal()">Cancel</button ONE>
                 </div>
             </div>
         </div>
@@ -1205,7 +1205,7 @@
         let currentPage = 'home';
         let currentEditingId = null;
         let authToken = null;
-        const API_BASE_URL = 'http://localhost:3000/api'; // Update to your backend URL if hosted
+        const API_BASE_URL = 'http://localhost:3000/api'; // Update to your backend URL, e.g., https://your-backend-url.com/api
 
         // Initialize the website
         document.addEventListener('DOMContentLoaded', function() {
@@ -1368,8 +1368,21 @@
             try {
                 const response = await fetch(`${API_BASE_URL}/articles/${id}`);
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP error ${response.status}: ${errorText || response.statusText}`);
+                    let errorMessage = `HTTP error ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        // No JSON response available
+                    }
+                    if (response.status === 404) {
+                        errorMessage = `Article not found at ${API_BASE_URL}/articles/${id}. Check if the article exists.`;
+                    } else if (response.status === 500) {
+                        errorMessage = `Server error at ${API_BASE_URL}/articles/${id}. Check backend logs.`;
+                    } else if (!navigator.onLine) {
+                        errorMessage = `No internet connection. Please check your network.`;
+                    }
+                    throw new Error(errorMessage);
                 }
                 const article = await response.json();
                 const modal = document.getElementById('articleModal');
@@ -1504,7 +1517,9 @@
         // Persistence functions
         async function loadArticles() {
             try {
-                const response = await fetch(`${API_BASE_URL}/articles`);
+                const response = await fetch(`${API_BASE_URL}/articles`, {
+                    headers: { 'Accept': 'application/json' }
+                });
                 if (!response.ok) {
                     let errorMessage = `HTTP error ${response.status}: ${response.statusText}`;
                     try {
@@ -1514,15 +1529,20 @@
                         // No JSON response available
                     }
                     if (response.status === 404) {
-                        errorMessage = `API endpoint not found at ${API_BASE_URL}/articles. Check if the backend is running and the URL is correct.`;
+                        errorMessage = `API endpoint not found at ${API_BASE_URL}/articles. Ensure the backend is running and the URL is correct.`;
                     } else if (response.status === 500) {
                         errorMessage = `Server error at ${API_BASE_URL}/articles. Check backend logs for details.`;
                     } else if (!navigator.onLine) {
                         errorMessage = `No internet connection. Please check your network and try again.`;
+                    } else if (response.status === 0) {
+                        errorMessage = `CORS error or backend unreachable at ${API_BASE_URL}/articles. Ensure CORS is enabled on the backend.`;
                     }
                     throw new Error(errorMessage);
                 }
                 articles = await response.json();
+                if (!Array.isArray(articles)) {
+                    throw new Error('Invalid response: Expected an array of articles.');
+                }
                 updateCategoryCounts();
                 loadFeaturedArticles();
                 loadPageContent(currentPage);
@@ -1532,7 +1552,7 @@
                 // Fallback to sample data
                 articles = [
                     {
-                        _id: Date.now() + 1,
+                        _id: 'fallback_' + Date.now() + 1,
                         title: "Revolutionary AI Breakthrough in Natural Language Processing",
                         category: "AI",
                         excerpt: "Scientists have developed a new AI model that can understand context with unprecedented accuracy.",
@@ -1542,12 +1562,78 @@
                         date: new Date().toISOString(),
                         author: "ByteCast Team",
                         readTime: 4
+                    },
+                    {
+                        _id: 'fallback_' + Date.now() + 2,
+                        title: "Quantum Computing: The Next Frontier",
+                        category: "Tech",
+                        excerpt: "Quantum computers are set to revolutionize the tech industry with unmatched processing power.",
+                        content: "Quantum computing is advancing rapidly, promising to solve problems beyond the reach of classical computers.\n\nRecent developments include new qubit designs and error correction techniques.\n\nApplications include cryptography, AI, and drug discovery.",
+                        image: "https://images.unsplash.com/photo-1595675021516-1d81b1b3f7c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
+                        source: "ByteCast Network",
+                        date: new Date().toISOString(),
+                        author: "ByteCast Team",
+                        readTime: 5
                     }
                 ];
                 updateCategoryCounts();
                 loadFeaturedArticles();
                 loadPageContent(currentPage);
             }
+        }
+
+        function loadFeaturedArticles() {
+            const container = document.getElementById('featuredArticles');
+            if (!container) return;
+            container.innerHTML = articles.slice(0, 3).map(article => `
+                <a href="#" class="article-card" onclick="openArticleModal('${article._id}'); return false;">
+                    <div class="article-image">
+                        ${article.image ? `<img src="${article.image}" alt="${article.title}">` : 'No Image'}
+                    </div>
+                    <div class="article-content">
+                        <span class="article-category">${article.category}</span>
+                        <h3 class="article-title">${article.title}</h3>
+                        <p class="article-excerpt">${article.excerpt}</p>
+                        <div class="article-meta">
+                            <span>${article.author || 'Unknown Author'}</span>
+                            <span>${article.date ? new Date(article.date).toLocaleDateString() : 'Unknown Date'}</span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        function loadCategoryArticles(category, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const filteredArticles = articles.filter(article => article.category === category);
+            container.innerHTML = filteredArticles.length > 0 ? filteredArticles.map(article => `
+                <a href="#" class="article-card" onclick="openArticleModal('${article._id}'); return false;">
+                    <div class="article-image">
+                        ${article.image ? `<img src="${article.image}" alt="${article.title}">` : 'No Image'}
+                    </div>
+                    <div class="article-content">
+                        <span class="article-category">${article.category}</span>
+                        <h3 class="article-title">${article.title}</h3>
+                        <p class="article-excerpt">${article.excerpt}</p>
+                        <div class="article-meta">
+                            <span>${article.author || 'Unknown Author'}</span>
+                            <span>${article.date ? new Date(article.date).toLocaleDateString() : 'Unknown Date'}</span>
+                        </div>
+                    </div>
+                </a>
+            `).join('') : `<p style="color: var(--gray-400);">No articles found in ${category} category.</p>`;
+        }
+
+        function updateCategoryCounts() {
+            const categories = ['AI', 'Tech', 'Innovation', 'Reviews'];
+            categories.forEach(category => {
+                const count = articles.filter(article => article.category === category).length;
+                const element = document.getElementById(category.toLowerCase() + 'Count');
+                if (element) {
+                    element.textContent = `${count} article${count !== 1 ? 's' : ''}`;
+                }
+            });
         }
 
         async function createOrUpdatePost(event) {
@@ -1572,6 +1658,9 @@
             formData.append('excerpt', excerpt);
             formData.append('content', content);
             formData.append('source', source);
+            formData.append('author', 'ByteCast Team'); // Default author
+            formData.append('date', new Date().toISOString());
+            formData.append('readTime', Math.ceil(content.split(' ').length / 200)); // Estimate read time
             if (fileInput.files[0]) {
                 formData.append('image', fileInput.files[0]);
             } else if (imageUrl) {
@@ -1605,62 +1694,47 @@
         }
 
         async function editArticle(id) {
+            if (!id) {
+                alert('Error: No article ID provided for editing.');
+                return;
+            }
             try {
                 const response = await fetch(`${API_BASE_URL}/articles/${id}`);
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP error ${response.status}: ${errorText || response.statusText}`);
+                    let errorMessage = `HTTP error ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        // No JSON response available
+                    }
+                    throw new Error(errorMessage);
                 }
                 const article = await response.json();
-                if (response.ok) {
-                    currentEditingId = article._id;
-                    switchAdminTab('create');
-                    document.getElementById('postTitle').value = article.title;
-                    document.getElementById('postCategory').value = article.category;
-                    document.getElementById('postExcerpt').value = article.excerpt;
-                    document.getElementById('postContent').value = article.content;
-                    document.getElementById('postImageUrl').value = article.image || '';
-                    document.getElementById('postSource').value = article.source;
-                    document.getElementById('publishButton').textContent = 'Update Article';
-                    
-                    const preview = document.getElementById('imagePreview');
-                    if (article.image) {
-                        preview.src = article.image;
-                        preview.style.display = 'block';
-                    } else {
-                        preview.style.display = 'none';
-                    }
-                    document.getElementById('postImageFile').value = '';
+                currentEditingId = article._id;
+                switchAdminTab('create');
+                document.getElementById('postTitle').value = article.title || '';
+                document.getElementById('postCategory').value = article.category || '';
+                document.getElementById('postExcerpt').value = article.excerpt || '';
+                document.getElementById('postContent').value = article.content || '';
+                document.getElementById('postImageUrl').value = article.image || '';
+                document.getElementById('postSource').value = article.source || '';
+                document.getElementById('publishButton').textContent = 'Update Article';
+                
+                const preview = document.getElementById('imagePreview');
+                if (article.image) {
+                    preview.src = article.image;
+                    preview.style.display = 'block';
                 } else {
-                    alert(article.error || 'Error loading article.');
+                    preview.style.display = 'none';
                 }
+                document.getElementById('postImageFile').value = '';
             } catch (error) {
-                console.error('Error loading article:', error);
+                console.error('Error loading article for edit:', error);
                 alert(`Error loading article: ${error.message}. Please check if the backend is running at ${API_BASE_URL}.`);
             }
         }
 
-        function cancelEdit() {
-            currentEditingId = null;
-            document.querySelector('#adminCreate form').reset();
-            document.getElementById('publishButton').textContent = 'Publish Article';
-            document.getElementById('imagePreview').style.display = 'none';
-        }
-
-        async function loadArticlesForManagement() {
-            if (!isAdminLoggedIn) return;
-            const container = document.getElementById('articlesList');
-            try {
-                const response = await fetch(`${API_BASE_URL}/articles`);
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP error ${response.status}: ${errorText || response.statusText}`);
-                }
-                const articles = await response.json();
-                if (articles.length === 0) {
-                    container.innerHTML = '<p style="color: var(--gray-400);">No articles found.</p>';
-                    return;
-                }
-                
-                container.innerHTML = articles.map(article => `
-                    <div style="background: var(--gray-900); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid
+        async function deleteArticle(id) {
+            if (!id) {
+                alert('Error: No
