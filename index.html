@@ -594,7 +594,7 @@
         }
 
         .popup-ad.show {
-            display: block !important;
+            display: block;
         }
         
         .popup-ad:hover {
@@ -1204,10 +1204,11 @@
         let currentPage = 'home';
         let currentEditingId = null;
         let authToken = null;
-        const API_BASE_URL = 'http://localhost:3000/api'; // Update to your backend URL, e.g., https://your-backend-url.com/api
+        const API_BASE_URL = 'http://localhost:3000/api'; // Update to your backend URL
 
         // Initialize the website
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded, initializing website...');
             loadArticles();
             loadFeaturedArticles();
             updateCategoryCounts();
@@ -1219,18 +1220,27 @@
         function checkAdminToken() {
             authToken = localStorage.getItem('authToken');
             if (authToken) {
+                console.log('Admin token found, enabling admin panel');
                 isAdminLoggedIn = true;
-                document.getElementById('adminPanel').classList.add('active');
-                loadArticlesForManagement();
+                const adminPanel = document.getElementById('adminPanel');
+                if (adminPanel) {
+                    adminPanel.classList.add('active');
+                    loadArticlesForManagement();
+                } else {
+                    console.error('Admin panel element not found');
+                }
             }
         }
 
         // Admin access
         document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.keyCode === 65)) {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a' || e.keyCode === 65)) {
                 e.preventDefault();
+                console.log('Ctrl+Shift+A pressed');
                 if (!isAdminLoggedIn) {
                     openAdminModal();
+                } else {
+                    console.log('Admin already logged in, skipping modal');
                 }
             }
         });
@@ -1246,11 +1256,14 @@
                 currentPage = pageId;
                 loadPageContent(pageId);
                 window.scrollTo(0, 0);
+            } else {
+                console.error(`Page ${pageId}Page not found`);
             }
         }
 
         // Load content for specific pages
         function loadPageContent(pageId) {
+            console.log(`Loading content for page: ${pageId}`);
             switch(pageId) {
                 case 'home':
                     loadFeaturedArticles();
@@ -1272,19 +1285,34 @@
 
         // Admin functions
         function openAdminModal() {
-            document.getElementById('adminModal').classList.add('active');
+            const modal = document.getElementById('adminModal');
+            if (modal) {
+                modal.classList.add('active');
+                console.log('Admin modal opened');
+            } else {
+                console.error('Admin modal element not found');
+            }
         }
 
         function closeAdminModal() {
-            document.getElementById('adminModal').classList.remove('active');
-            document.getElementById('adminUsername').value = '';
-            document.getElementById('adminPassword').value = '';
+            const modal = document.getElementById('adminModal');
+            if (modal) {
+                modal.classList.remove('active');
+                document.getElementById('adminUsername').value = '';
+                document.getElementById('adminPassword').value = '';
+                console.log('Admin modal closed');
+            }
         }
 
         async function adminLogin() {
-            const username = document.getElementById('adminUsername').value;
-            const password = document.getElementById('adminPassword').value;
+            const username = document.getElementById('adminUsername')?.value;
+            const password = document.getElementById('adminPassword')?.value;
             
+            if (!username || !password) {
+                alert('Please enter both username and password.');
+                return;
+            }
+
             try {
                 const response = await fetch(`${API_BASE_URL}/login`, {
                     method: 'POST',
@@ -1296,12 +1324,20 @@
                     authToken = data.token;
                     localStorage.setItem('authToken', authToken);
                     isAdminLoggedIn = true;
-                    document.getElementById('adminPanel').classList.add('active');
-                    closeAdminModal();
-                    loadArticlesForManagement();
-                    alert('Welcome to ByteCast Admin Panel!');
+                    const adminPanel = document.getElementById('adminPanel');
+                    if (adminPanel) {
+                        adminPanel.classList.add('active');
+                        closeAdminModal();
+                        loadArticlesForManagement();
+                        alert('Welcome to ByteCast Admin Panel!');
+                        console.log('Admin login successful');
+                    } else {
+                        console.error('Admin panel element not found');
+                        alert('Error: Admin panel not found in DOM.');
+                    }
                 } else {
                     alert(data.error || 'Invalid credentials. Please try again.');
+                    console.error('Login failed:', data.error || 'Invalid credentials');
                 }
             } catch (error) {
                 console.error('Login error:', error);
@@ -1313,8 +1349,12 @@
             isAdminLoggedIn = false;
             authToken = null;
             localStorage.removeItem('authToken');
-            document.getElementById('adminPanel').classList.remove('active');
-            alert('Logged out successfully.');
+            const adminPanel = document.getElementById('adminPanel');
+            if (adminPanel) {
+                adminPanel.classList.remove('active');
+                alert('Logged out successfully.');
+                console.log('Admin logged out');
+            }
         }
 
         function switchAdminTab(tabName) {
@@ -1322,11 +1362,17 @@
             tabs.forEach(tab => tab.classList.remove('active'));
             
             const clickedTab = Array.from(tabs).find(tab => tab.textContent.toLowerCase().includes(tabName.toLowerCase()));
-            if (clickedTab) clickedTab.classList.add('active');
+            if (clickedTab) {
+                clickedTab.classList.add('active');
+            }
             
             const contents = document.querySelectorAll('.admin-content');
             contents.forEach(content => content.classList.remove('active'));
-            document.getElementById('admin' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.add('active');
+            const content = document.getElementById('admin' + tabName.charAt(0).toUpperCase() + tabName.slice(1));
+            if (content) {
+                content.classList.add('active');
+                console.log(`Switched to admin tab: ${tabName}`);
+            }
         }
 
         // Image preview
@@ -1361,7 +1407,7 @@
         async function openArticleModal(id) {
             if (!id) {
                 console.error('No article ID provided');
-                alert('Error: No article ID provided. Please try again.');
+                alert('Error: No article ID provided.');
                 return;
             }
             try {
@@ -1374,13 +1420,6 @@
                     } catch {
                         // No JSON response available
                     }
-                    if (response.status === 404) {
-                        errorMessage = `Article not found at ${API_BASE_URL}/articles/${id}. Check if the article exists.`;
-                    } else if (response.status === 500) {
-                        errorMessage = `Server error at ${API_BASE_URL}/articles/${id}. Check backend logs.`;
-                    } else if (!navigator.onLine) {
-                        errorMessage = `No internet connection. Please check your network.`;
-                    }
                     throw new Error(errorMessage);
                 }
                 const article = await response.json();
@@ -1391,39 +1430,52 @@
                 const modalContent = document.getElementById('modalContent');
                 const modalSource = document.getElementById('modalSource');
 
-                modalTitle.textContent = article.title || 'Untitled';
-                modalMeta.textContent = `${article.author || 'Unknown Author'} | ${article.date ? new Date(article.date).toLocaleDateString() : 'Unknown Date'} | ${article.readTime || 0} min read`;
-                modalContent.innerHTML = article.content ? article.content.split('\n\n').map(para => `<p>${para}</p>`).join('') : '<p>No content available.</p>';
-                modalSource.textContent = article.source ? `Source: ${article.source}` : '';
-                
-                if (article.image) {
-                    modalImage.src = article.image;
-                    modalImage.style.display = 'block';
-                } else {
-                    modalImage.style.display = 'none';
-                }
+                if (modal && modalTitle && modalMeta && modalContent) {
+                    modalTitle.textContent = article.title || 'Untitled';
+                    modalMeta.textContent = `${article.author || 'Unknown Author'} | ${article.date ? new Date(article.date).toLocaleDateString() : 'Unknown Date'} | ${article.readTime || 0} min read`;
+                    modalContent.innerHTML = article.content ? article.content.split('\n\n').map(para => `<p>${para}</p>`).join('') : '<p>No content available.</p>';
+                    modalSource.textContent = article.source ? `Source: ${article.source}` : '';
+                    
+                    if (article.image && modalImage) {
+                        modalImage.src = article.image;
+                        modalImage.style.display = 'block';
+                    } else if (modalImage) {
+                        modalImage.style.display = 'none';
+                    }
 
-                modal.classList.add('active');
+                    modal.classList.add('active');
+                    console.log(`Opened article modal for ID: ${id}`);
+                } else {
+                    console.error('Article modal elements not found');
+                    alert('Error: Article modal elements missing.');
+                }
             } catch (error) {
                 console.error('Error loading article:', error);
-                alert(`Failed to open article: ${error.message}. Please check if the backend is running at ${API_BASE_URL} and verify the article ID.`);
+                alert(`Failed to open article: ${error.message}. Please check if the backend is running at ${API_BASE_URL}.`);
             }
         }
 
         function closeArticleModal() {
-            document.getElementById('articleModal').classList.remove('active');
-            document.getElementById('modalTitle').textContent = '';
-            document.getElementById('modalMeta').textContent = '';
-            document.getElementById('modalContent').innerHTML = '';
-            document.getElementById('modalSource').textContent = '';
-            document.getElementById('modalImage').style.display = 'none';
+            const modal = document.getElementById('articleModal');
+            if (modal) {
+                modal.classList.remove('active');
+                document.getElementById('modalTitle').textContent = '';
+                document.getElementById('modalMeta').textContent = '';
+                document.getElementById('modalContent').innerHTML = '';
+                document.getElementById('modalSource').textContent = '';
+                const modalImage = document.getElementById('modalImage');
+                if (modalImage) modalImage.style.display = 'none';
+                console.log('Article modal closed');
+            }
         }
 
         // Affiliate popups
         function startAffiliatePopups() {
             const popups = ['aliexpressAd', 'coohomAd', 'redmagicAd'];
             let currentIndex = 0;
-            let activePopups = [...popups]; // Track which popups are still active
+            let activePopups = [...popups];
+
+            console.log('Initializing affiliate popups:', activePopups);
 
             function showNextPopup() {
                 if (activePopups.length === 0) {
@@ -1434,26 +1486,28 @@
                 // Hide all popups
                 popups.forEach(id => {
                     const popup = document.getElementById(id);
-                    if (popup) popup.classList.remove('show');
+                    if (popup) {
+                        popup.classList.remove('show');
+                    }
                 });
 
                 // Show the next active popup
                 const currentPopupId = activePopups[currentIndex];
                 const currentPopup = document.getElementById(currentPopupId);
                 if (currentPopup) {
-                    console.log(`Showing popup: ${currentPopupId}`);
                     currentPopup.classList.add('show');
+                    console.log(`Showing popup: ${currentPopupId}`);
                 } else {
-                    console.warn(`Popup element ${currentPopupId} not found in DOM`);
+                    console.warn(`Popup element ${currentPopupId} not found`);
                 }
 
                 currentIndex = (currentIndex + 1) % activePopups.length;
-                setTimeout(showNextPopup, 10000); // Change every 10 seconds
+                setTimeout(showNextPopup, 10000); // Cycle every 10 seconds
             }
 
-            // Start with a 5-second delay
+            // Start after 5-second delay
             setTimeout(() => {
-                console.log('Starting affiliate popup cycle');
+                console.log('Starting popup cycle');
                 showNextPopup();
             }, 5000);
         }
@@ -1464,17 +1518,20 @@
                 popup.classList.remove('show');
                 console.log(`Closed popup: ${id}`);
             }
-            // Optionally, remove from activePopups to stop showing this popup
-            // activePopups = activePopups.filter(p => p !== id);
         }
 
         // Contact and newsletter forms
         async function handleContact(event) {
             event.preventDefault();
-            const name = document.getElementById('contactName').value;
-            const email = document.getElementById('contactEmail').value;
-            const subject = document.getElementById('contactSubject').value;
-            const message = document.getElementById('contactMessage').value;
+            const name = document.getElementById('contactName')?.value;
+            const email = document.getElementById('contactEmail')?.value;
+            const subject = document.getElementById('contactSubject')?.value;
+            const message = document.getElementById('contactMessage')?.value;
+
+            if (!name || !email || !subject || !message) {
+                alert('Please fill in all contact form fields.');
+                return;
+            }
 
             try {
                 const response = await fetch(`${API_BASE_URL}/contact`, {
@@ -1485,9 +1542,11 @@
                 if (response.ok) {
                     alert('Message sent successfully!');
                     document.querySelector('#contactPage form').reset();
+                    console.log('Contact form submitted successfully');
                 } else {
                     const data = await response.json();
                     alert(data.error || `Error sending message: HTTP ${response.status}`);
+                    console.error('Contact form error:', data.error);
                 }
             } catch (error) {
                 console.error('Error sending contact form:', error);
@@ -1497,7 +1556,12 @@
 
         async function handleNewsletter(event) {
             event.preventDefault();
-            const email = document.getElementById('newsletterEmail').value;
+            const email = document.getElementById('newsletterEmail')?.value;
+
+            if (!email) {
+                alert('Please enter an email address.');
+                return;
+            }
 
             try {
                 const response = await fetch(`${API_BASE_URL}/newsletter`, {
@@ -1508,9 +1572,11 @@
                 if (response.ok) {
                     alert('Subscribed successfully!');
                     document.getElementById('newsletterEmail').value = '';
+                    console.log('Newsletter subscription successful');
                 } else {
                     const data = await response.json();
                     alert(data.error || `Error subscribing to newsletter: HTTP ${response.status}`);
+                    console.error('Newsletter error:', data.error);
                 }
             } catch (error) {
                 console.error('Error subscribing to newsletter:', error);
@@ -1519,8 +1585,13 @@
         }
 
         async function saveSettings() {
-            const siteTitle = document.getElementById('siteTitle').value;
-            const siteDescription = document.getElementById('siteDescription').value;
+            const siteTitle = document.getElementById('siteTitle')?.value;
+            const siteDescription = document.getElementById('siteDescription')?.value;
+
+            if (!siteTitle || !siteDescription) {
+                alert('Please fill in all settings fields.');
+                return;
+            }
 
             try {
                 const response = await fetch(`${API_BASE_URL}/settings`, {
@@ -1533,9 +1604,11 @@
                 });
                 if (response.ok) {
                     alert('Settings saved successfully!');
+                    console.log('Settings saved');
                 } else {
                     const data = await response.json();
                     alert(data.error || `Error saving settings: HTTP ${response.status}`);
+                    console.error('Settings error:', data.error);
                 }
             } catch (error) {
                 console.error('Error saving settings:', error);
@@ -1555,16 +1628,7 @@
                         const errorData = await response.json();
                         errorMessage = errorData.error || errorMessage;
                     } catch {
-                        // No JSON response available
-                    }
-                    if (response.status === 404) {
-                        errorMessage = `API endpoint not found at ${API_BASE_URL}/articles. Ensure the backend is running and the URL is correct.`;
-                    } else if (response.status === 500) {
-                        errorMessage = `Server error at ${API_BASE_URL}/articles. Check backend logs for details.`;
-                    } else if (!navigator.onLine) {
-                        errorMessage = `No internet connection. Please check your network and try again.`;
-                    } else if (response.status === 0) {
-                        errorMessage = `CORS error or backend unreachable at ${API_BASE_URL}/articles. Ensure CORS is enabled on the backend.`;
+                        // No JSON response
                     }
                     throw new Error(errorMessage);
                 }
@@ -1572,13 +1636,13 @@
                 if (!Array.isArray(articles)) {
                     throw new Error('Invalid response: Expected an array of articles.');
                 }
+                console.log('Articles loaded:', articles.length);
                 updateCategoryCounts();
                 loadFeaturedArticles();
                 loadPageContent(currentPage);
             } catch (error) {
                 console.error('Error loading articles:', error);
                 alert(`Failed to load articles: ${error.message}. Using fallback data.`);
-                // Fallback to sample data
                 articles = [
                     {
                         _id: 'fallback_' + Date.now() + 1,
@@ -1613,7 +1677,10 @@
 
         function loadFeaturedArticles() {
             const container = document.getElementById('featuredArticles');
-            if (!container) return;
+            if (!container) {
+                console.error('Featured articles container not found');
+                return;
+            }
             container.innerHTML = articles.slice(0, 3).map(article => `
                 <a href="#" class="article-card" onclick="openArticleModal('${article._id}'); return false;">
                     <div class="article-image">
@@ -1630,11 +1697,15 @@
                     </div>
                 </a>
             `).join('');
+            console.log('Loaded featured articles');
         }
 
         function loadCategoryArticles(category, containerId) {
             const container = document.getElementById(containerId);
-            if (!container) return;
+            if (!container) {
+                console.error(`Container ${containerId} not found`);
+                return;
+            }
             const filteredArticles = articles.filter(article => article.category === category);
             container.innerHTML = filteredArticles.length > 0 ? filteredArticles.map(article => `
                 <a href="#" class="article-card" onclick="openArticleModal('${article._id}'); return false;">
@@ -1652,6 +1723,7 @@
                     </div>
                 </a>
             `).join('') : `<p style="color: var(--gray-400);">No articles found in ${category} category.</p>`;
+            console.log(`Loaded ${category} articles`);
         }
 
         function updateCategoryCounts() {
@@ -1663,18 +1735,19 @@
                     element.textContent = `${count} article${count !== 1 ? 's' : ''}`;
                 }
             });
+            console.log('Updated category counts');
         }
 
         async function createOrUpdatePost(event) {
             event.preventDefault();
             
-            const title = document.getElementById('postTitle').value;
-            const category = document.getElementById('postCategory').value;
-            const excerpt = document.getElementById('postExcerpt').value;
-            const content = document.getElementById('postContent').value;
+            const title = document.getElementById('postTitle')?.value;
+            const category = document.getElementById('postCategory')?.value;
+            const excerpt = document.getElementById('postExcerpt')?.value;
+            const content = document.getElementById('postContent')?.value;
             const fileInput = document.getElementById('postImageFile');
-            const imageUrl = document.getElementById('postImageUrl').value;
-            const source = document.getElementById('postSource').value;
+            const imageUrl = document.getElementById('postImageUrl')?.value;
+            const source = document.getElementById('postSource')?.value;
 
             if (!title || !category || !excerpt || !content) {
                 alert('Please fill in all required fields.');
@@ -1687,10 +1760,10 @@
             formData.append('excerpt', excerpt);
             formData.append('content', content);
             formData.append('source', source);
-            formData.append('author', 'ByteCast Team'); // Default author
+            formData.append('author', 'ByteCast Team');
             formData.append('date', new Date().toISOString());
-            formData.append('readTime', Math.ceil(content.split(' ').length / 200)); // Estimate read time
-            if (fileInput.files[0]) {
+            formData.append('readTime', Math.ceil(content.split(' ').length / 200));
+            if (fileInput?.files[0]) {
                 formData.append('image', fileInput.files[0]);
             } else if (imageUrl) {
                 formData.append('imageUrl', imageUrl);
@@ -1701,91 +1774,4 @@
 
             try {
                 const response = await fetch(`${API_BASE_URL}/articles`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`,
-                    },
-                    body: formData,
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    alert(currentEditingId ? 'Article updated successfully!' : 'Article published successfully!');
-                    cancelEdit();
-                    await loadArticles();
-                    loadArticlesForManagement();
-                } else {
-                    alert(data.error || `Error saving article: HTTP ${response.status}`);
-                }
-            } catch (error) {
-                console.error('Error saving article:', error);
-                alert(`Error saving article: ${error.message}. Please check if the backend is running at ${API_BASE_URL}.`);
-            }
-        }
-
-        async function editArticle(id) {
-            if (!id) {
-                alert('Error: No article ID provided for editing.');
-                return;
-            }
-            try {
-                const response = await fetch(`${API_BASE_URL}/articles/${id}`);
-                if (!response.ok) {
-                    let errorMessage = `HTTP error ${response.status}: ${response.statusText}`;
-                    try {
-                        const errorData = await response.json();
-                        errorMessage = errorData.error || errorMessage;
-                    } catch {
-                        // No JSON response available
-                    }
-                    throw new Error(errorMessage);
-                }
-                const article = await response.json();
-                currentEditingId = article._id;
-                switchAdminTab('create');
-                document.getElementById('postTitle').value = article.title || '';
-                document.getElementById('postCategory').value = article.category || '';
-                document.getElementById('postExcerpt').value = article.excerpt || '';
-                document.getElementById('postContent').value = article.content || '';
-                document.getElementById('postImageUrl').value = article.image || '';
-                document.getElementById('postSource').value = article.source || '';
-                document.getElementById('publishButton').textContent = 'Update Article';
-                
-                const preview = document.getElementById('imagePreview');
-                if (article.image) {
-                    preview.src = article.image;
-                    preview.style.display = 'block';
-                } else {
-                    preview.style.display = 'none';
-                }
-                document.getElementById('postImageFile').value = '';
-            } catch (error) {
-                console.error('Error loading article for edit:', error);
-                alert(`Error loading article: ${error.message}. Please check if the backend is running at ${API_BASE_URL}.`);
-            }
-        }
-
-        async function deleteArticle(id) {
-            if (!id) {
-                alert('Error: No article ID provided for deletion.');
-                return;
-            }
-            if (!confirm('Are you sure you want to delete this article?')) {
-                return;
-            }
-            try {
-                const response = await fetch(`${API_BASE_URL}/articles/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`,
-                    },
-                });
-                if (response.ok) {
-                    alert('Article deleted successfully!');
-                    await loadArticles();
-                    loadArticlesForManagement();
-                } else {
-                    const data = await response.json();
-                    alert(data.error || `Error deleting article: HTTP ${response.status}`);
-                }
-            } catch (error) {
-                console.error('Error deleting article:', error);
+                    method
