@@ -473,6 +473,7 @@
             display: flex;
             gap: 1rem;
             margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
 
         .admin-tab {
@@ -483,6 +484,7 @@
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 0.9rem;
         }
 
         .admin-tab.active {
@@ -575,6 +577,37 @@
             max-height: 200px;
             border-radius: 8px;
             display: none;
+        }
+
+        /* Article Management List */
+        .article-list-item {
+            background: var(--gray-700);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--gray-600);
+        }
+
+        .article-list-item h4 {
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+
+        .article-list-item p {
+            color: var(--gray-400);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .article-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
         }
 
         /* Popup Affiliate Ads */
@@ -684,6 +717,103 @@
                 opacity: 1;
             }
         }
+
+        /* Article Reading Page */
+        .article-page {
+            padding: 2rem 0;
+            background: var(--black);
+        }
+
+        .article-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .article-page h1 {
+            font-size: 2.5rem;
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .article-page .meta {
+            color: var(--gray-400);
+            margin-bottom: 2rem;
+        }
+
+        .article-page .article-image-large {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .article-body {
+            background: var(--gray-900);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .article-body p {
+            color: var(--gray-300);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        .article-ads {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1rem;
+            background: var(--gray-800);
+            border-radius: 10px;
+        }
+
+        /* Comments Section */
+        .comments-section {
+            background: var(--gray-900);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .comments-section h3 {
+            color: var(--white);
+            margin-bottom: 2rem;
+        }
+
+        .comment-form {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--gray-800);
+            border-radius: 10px;
+        }
+
+        .comment-item {
+            background: var(--gray-800);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--white);
+        }
+
+        .comment-author {
+            color: var(--white);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-date {
+            color: var(--gray-500);
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .comment-text {
+            color: var(--gray-300);
+            line-height: 1.6;
+        }
         
         /* Footer */
         footer {
@@ -761,6 +891,14 @@
                 max-width: 280px;
                 margin: 0 20px;
             }
+
+            .admin-tabs {
+                flex-direction: column;
+            }
+
+            .admin-modal-content {
+                max-width: 95%;
+            }
         }
         
         /* Loading Animation */
@@ -780,39 +918,27 @@
 
         /* Article Modal */
         .article-modal-content {
-            max-width: 800px;
-            width: 90%;
+            max-width: 900px;
+            width: 95%;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .article-modal-header {
             padding: 2rem;
+            border-bottom: 1px solid var(--gray-700);
+        }
+
+        .article-modal-body {
+            padding: 2rem;
+            max-height: 70vh;
             overflow-y: auto;
         }
 
-        .article-modal-content h2 {
-            color: var(--white);
-            margin-bottom: 1rem;
-        }
-
-        .article-modal-content .meta {
-            color: var(--gray-400);
-            margin-bottom: 1.5rem;
-            font-style: italic;
-        }
-
-        .article-modal-content .source {
-            color: var(--gray-500);
-            font-size: 0.9rem;
-            margin-top: 1rem;
-        }
-
-        .article-modal-content p {
-            margin-bottom: 1rem;
-            color: var(--gray-300);
-        }
-
-        .article-modal-image {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 1.5rem;
-            border-radius: 8px;
+        .article-modal-footer {
+            padding: 1rem 2rem;
+            border-top: 1px solid var(--gray-700);
+            text-align: center;
         }
 
         .close-btn {
@@ -824,13 +950,19 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            margin-top: 1rem;
-            width: 100%;
         }
 
         .close-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .article-modal-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
         }
     </style>
 </head>
@@ -860,12 +992,54 @@
     <!-- Article View Modal -->
     <div id="articleModal" class="admin-modal">
         <div class="article-modal-content admin-modal-content">
-            <h2 id="modalTitle"></h2>
-            <p class="meta" id="modalMeta"></p>
-            <img id="modalImage" class="article-modal-image" style="display: none;" alt="Article Image">
-            <div id="modalContent"></div>
-            <p class="source" id="modalSource"></p>
-            <button class="close-btn" onclick="closeArticleModal()">Close</button>
+            <div class="article-modal-header">
+                <h2 id="modalTitle"></h2>
+                <p class="meta" id="modalMeta" style="color: var(--gray-400);"></p>
+            </div>
+            <div class="article-modal-body">
+                <img id="modalImage" class="article-modal-image" style="display: none;" alt="Article Image">
+                <div id="modalContent"></div>
+                <p class="source" id="modalSource" style="color: var(--gray-500); font-size: 0.9rem; margin-top: 1rem;"></p>
+                
+                <!-- Ad in article -->
+                <div class="article-ads">
+                    <div style="background: var(--gray-700); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <p style="color: var(--gray-400); font-size: 0.8rem; margin-bottom: 0.5rem;">Advertisement</p>
+                        <iframe data-aa='2407511' src='//acceptable.a-ads.com/2407511/?size=320x100'
+                                style='border: 0; padding: 0; width: 100%; height: 100px; overflow: hidden; display: block;'
+                                title="A-ADS Article Advertisement"></iframe>
+                    </div>
+                </div>
+
+                <!-- Comments Section in Modal -->
+                <div class="comments-section">
+                    <h3>Comments</h3>
+                    <div class="comment-form">
+                        <h4 style="color: var(--white); margin-bottom: 1rem;">Leave a Comment</h4>
+                        <form onsubmit="submitComment(event)">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" id="commentName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="commentEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Comment</label>
+                                <textarea id="commentText" rows="4" required></textarea>
+                            </div>
+                            <button type="submit" class="btn">Post Comment</button>
+                        </form>
+                    </div>
+                    <div id="commentsList">
+                        <!-- Comments will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            <div class="article-modal-footer">
+                <button class="close-btn" onclick="closeArticleModal()">Close Article</button>
+            </div>
         </div>
     </div>
 
@@ -946,11 +1120,11 @@
                 <h3 style="color: var(--white); margin-bottom: 1rem;">Create or Edit Article</h3>
                 <form class="content-form" onsubmit="createOrUpdatePost(event)">
                     <div class="form-group">
-                        <label>Title</label>
-                        <input type="text" id="postTitle" required>
+                        <label>Title *</label>
+                        <input type="text" id="postTitle" required placeholder="Enter article title">
                     </div>
                     <div class="form-group">
-                        <label>Category</label>
+                        <label>Category *</label>
                         <select id="postCategory" required>
                             <option value="">Select Category</option>
                             <option value="AI">AI</option>
@@ -961,25 +1135,29 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Excerpt</label>
-                        <textarea id="postExcerpt" rows="3" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Content</label>
-                        <textarea id="postContent" rows="10" required placeholder="Write your full article content here. Use double newlines for paragraphs."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Article Image (Upload or URL)</label>
-                        <input type="file" id="postImageFile" accept="image/jpeg,image/png" onchange="previewImage(event)">
-                        <input type="url" id="postImageUrl" placeholder="Or paste image URL" style="margin-top: 0.5rem;">
+                        <label>Article Image *</label>
+                        <input type="file" id="postImageFile" accept="image/jpeg,image/png,image/jpg" onchange="previewImage(event)" required>
                         <img id="imagePreview" class="image-preview" alt="Image Preview">
                     </div>
                     <div class="form-group">
-                        <label>Source (optional)</label>
-                        <input type="text" id="postSource" placeholder="e.g. TechCrunch, The Verge">
+                        <label>Excerpt *</label>
+                        <textarea id="postExcerpt" rows="3" required placeholder="Brief summary of the article (2-3 sentences)"></textarea>
                     </div>
-                    <button type="submit" class="btn" id="publishButton">Publish Article</button>
-                    <button type="button" class="btn btn-secondary" onclick="cancelEdit()" style="margin-top: 0.5rem;">Cancel Edit</button>
+                    <div class="form-group">
+                        <label>Content *</label>
+                        <textarea id="postContent" rows="12" required placeholder="Write your full article content here. Use double line breaks for new paragraphs."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Source (optional)</label>
+                        <input type="text" id="postSource" placeholder="e.g. TechCrunch, The Verge, or leave blank for ByteCast Network">
+                    </div>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button type="submit" class="btn" id="publishButton">
+                            <span id="publishText">Publish Article</span>
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="cancelEdit()" id="cancelButton" style="display: none;">Cancel Edit</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear Form</button>
+                    </div>
                 </form>
             </div>
 
@@ -1003,6 +1181,14 @@
                         <label>Site Description</label>
                         <textarea rows="3" id="siteDescription">Your premier source for tech news, AI updates, and innovation insights.</textarea>
                     </div>
+                    <div class="form-group">
+                        <label>Admin Username</label>
+                        <input type="text" id="adminUsernameSettings" placeholder="Current: admin">
+                    </div>
+                    <div class="form-group">
+                        <label>Admin Password</label>
+                        <input type="password" id="adminPasswordSettings" placeholder="Enter new password">
+                    </div>
                     <button type="button" class="btn" onclick="saveSettings()">Save Settings</button>
                 </form>
             </div>
@@ -1014,7 +1200,7 @@
             <section class="hero">
                 <div class="container">
                     <div class="hero-content">
-                        <h1></h1>
+                        <h1>ByteCast Network™</h1>
                         <p>Your premier source for tech news, AI breakthroughs, and innovation insights. Stay ahead of the digital revolution.</p>
                         <a href="#" class="cta-button" onclick="showPage('tech')">Explore Latest Tech</a>
                     </div>
@@ -1024,9 +1210,9 @@
             <!-- A-ADS Banner -->
             <section class="ad-banner">
                 <div class="container">
-                    <div id="frame" style="width: 100%; margin: auto; background: rgba(0, 0, 0, 0.50); position: relative; z-index: 1500;">
-                        <iframe data-aa='2407511' src='//acceptable.a-ads.com/2407511/?size=Adaptive'
-                                style='border: 0; padding: 0; width: 100%; max-width: 728px; height: auto; overflow: hidden; display: block; margin: auto;'
+                    <div style="background: rgba(0, 0, 0, 0.50); padding: 1rem; border-radius: 8px;">
+                        <iframe data-aa='2407511' src='//acceptable.a-ads.com/2407511/?size=728x90'
+                                style='border: 0; padding: 0; width: 100%; max-width: 728px; height: 90px; overflow: hidden; display: block; margin: auto;'
                                 title="A-ADS Advertisement"></iframe>
                     </div>
                 </div>
@@ -1037,7 +1223,11 @@
                 <div class="container">
                     <h2 class="section-title">Featured Stories</h2>
                     <div class="articles-grid" id="featuredArticles">
-                        <!-- Dynamic content will be loaded here -->
+                        <div style="grid-column: 1 / -1; text-align: center; color: var(--gray-400); padding: 3rem;">
+                            <div class="loading" style="margin: 0 auto 1rem;"></div>
+                            <p>No articles available yet. Please use the admin panel to add some content!</p>
+                            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Press <kbd style="background: var(--gray-700); padding: 0.2rem 0.5rem; border-radius: 4px;">Ctrl + Shift + A</kbd> to access admin panel</p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1078,7 +1268,9 @@
                 <div class="container">
                     <h2 class="section-title">Technology News</h2>
                     <div class="articles-grid" id="techArticles">
-                        <!-- Tech articles will be loaded here -->
+                        <div style="grid-column: 1 / -1; text-align: center; color: var(--gray-400); padding: 3rem;">
+                            <p>No Technology articles available yet.</p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1090,7 +1282,9 @@
                 <div class="container">
                     <h2 class="section-title">Artificial Intelligence</h2>
                     <div class="articles-grid" id="aiArticles">
-                        <!-- AI articles will be loaded here -->
+                        <div style="grid-column: 1 / -1; text-align: center; color: var(--gray-400); padding: 3rem;">
+                            <p>No AI articles available yet.</p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1102,7 +1296,9 @@
                 <div class="container">
                     <h2 class="section-title">Product Reviews</h2>
                     <div class="articles-grid" id="reviewArticles">
-                        <!-- Review articles will be loaded here -->
+                        <div style="grid-column: 1 / -1; text-align: center; color: var(--gray-400); padding: 3rem;">
+                            <p>No Review articles available yet.</p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1114,7 +1310,9 @@
                 <div class="container">
                     <h2 class="section-title">Innovation & Startups</h2>
                     <div class="articles-grid" id="innovationArticles">
-                        <!-- Innovation articles will be loaded here -->
+                        <div style="grid-column: 1 / -1; text-align: center; color: var(--gray-400); padding: 3rem;">
+                            <p>No Innovation articles available yet.</p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1128,19 +1326,19 @@
                     <div style="max-width: 600px; margin: 0 auto; background: var(--gray-800); padding: 2rem; border-radius: 15px;">
                         <form class="content-form" onsubmit="handleContact(event)">
                             <div class="form-group">
-                                <label>Name</label>
+                                <label>Name *</label>
                                 <input type="text" id="contactName" required>
                             </div>
                             <div class="form-group">
-                                <label>Email</label>
+                                <label>Email *</label>
                                 <input type="email" id="contactEmail" required>
                             </div>
                             <div class="form-group">
-                                <label>Subject</label>
+                                <label>Subject *</label>
                                 <input type="text" id="contactSubject" required>
                             </div>
                             <div class="form-group">
-                                <label>Message</label>
+                                <label>Message *</label>
                                 <textarea id="contactMessage" rows="6" required></textarea>
                             </div>
                             <button type="submit" class="btn">Send Message</button>
@@ -1181,6 +1379,9 @@
                     <h3>Quick Links</h3>
                     <a href="#" onclick="showPage('home')">Home</a>
                     <a href="#" onclick="showPage('contact')">Contact Us</a>
+                    <p style="color: var(--gray-500); font-size: 0.8rem; margin-top: 1rem;">
+                        Admin Access: Ctrl+Shift+A
+                    </p>
                 </div>
                 <div class="footer-section">
                     <h3>Newsletter</h3>
@@ -1192,7 +1393,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; ByteCast Network™. All rights reserved. | Bringing you the future of technology.</p>
+                <p>&copy; 2024 ByteCast Network™. All rights reserved. | Bringing you the future of technology.</p>
             </div>
         </div>
     </footer>
@@ -1200,47 +1401,35 @@
     <script>
         // Global variables
         let articles = [];
+        let comments = {};
         let isAdminLoggedIn = false;
         let currentPage = 'home';
         let currentEditingId = null;
-        let authToken = null;
-        const API_BASE_URL = 'http://localhost:3000/api'; // Update to your backend URL
+        
+        // Admin credentials (in a real app, this should be server-side)
+        const ADMIN_CREDENTIALS = {
+            username: 'admin',
+            password: 'bytecast2024'
+        };
 
         // Initialize the website
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM fully loaded, initializing website...');
+            console.log('ByteCast Network initializing...');
             loadArticles();
-            loadFeaturedArticles();
             updateCategoryCounts();
             startAffiliatePopups();
-            checkAdminToken();
+            loadComments();
         });
 
-        // Check for existing admin token
-        function checkAdminToken() {
-            authToken = localStorage.getItem('authToken');
-            if (authToken) {
-                console.log('Admin token found, enabling admin panel');
-                isAdminLoggedIn = true;
-                const adminPanel = document.getElementById('adminPanel');
-                if (adminPanel) {
-                    adminPanel.classList.add('active');
-                    loadArticlesForManagement();
-                } else {
-                    console.error('Admin panel element not found');
-                }
-            }
-        }
-
-        // Admin access
+        // Admin access hotkey
         document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a' || e.keyCode === 65)) {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
                 e.preventDefault();
-                console.log('Ctrl+Shift+A pressed');
                 if (!isAdminLoggedIn) {
                     openAdminModal();
                 } else {
-                    console.log('Admin already logged in, skipping modal');
+                    const adminPanel = document.getElementById('adminPanel');
+                    adminPanel.style.display = adminPanel.style.display === 'none' ? 'block' : 'none';
                 }
             }
         });
@@ -1256,14 +1445,11 @@
                 currentPage = pageId;
                 loadPageContent(pageId);
                 window.scrollTo(0, 0);
-            } else {
-                console.error(`Page ${pageId}Page not found`);
             }
         }
 
         // Load content for specific pages
         function loadPageContent(pageId) {
-            console.log(`Loading content for page: ${pageId}`);
             switch(pageId) {
                 case 'home':
                     loadFeaturedArticles();
@@ -1285,493 +1471,23 @@
 
         // Admin functions
         function openAdminModal() {
-            const modal = document.getElementById('adminModal');
-            if (modal) {
-                modal.classList.add('active');
-                console.log('Admin modal opened');
-            } else {
-                console.error('Admin modal element not found');
-            }
+            document.getElementById('adminModal').classList.add('active');
         }
 
         function closeAdminModal() {
-            const modal = document.getElementById('adminModal');
-            if (modal) {
-                modal.classList.remove('active');
-                document.getElementById('adminUsername').value = '';
-                document.getElementById('adminPassword').value = '';
-                console.log('Admin modal closed');
-            }
+            document.getElementById('adminModal').classList.remove('active');
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
         }
 
-        async function adminLogin() {
-            const username = document.getElementById('adminUsername')?.value;
-            const password = document.getElementById('adminPassword')?.value;
+        function adminLogin() {
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
             
-            if (!username || !password) {
-                alert('Please enter both username and password.');
-                return;
+            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+                isAdminLoggedIn = true;
+                document.getElementById('adminPanel').classList.add('active');
+                closeAdminModal();
+                loadArticlesForManagement();
+                alert('Welcome to ByteCast Admin Panel!');
             }
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password }),
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    authToken = data.token;
-                    localStorage.setItem('authToken', authToken);
-                    isAdminLoggedIn = true;
-                    const adminPanel = document.getElementById('adminPanel');
-                    if (adminPanel) {
-                        adminPanel.classList.add('active');
-                        closeAdminModal();
-                        loadArticlesForManagement();
-                        alert('Welcome to ByteCast Admin Panel!');
-                        console.log('Admin login successful');
-                    } else {
-                        console.error('Admin panel element not found');
-                        alert('Error: Admin panel not found in DOM.');
-                    }
-                } else {
-                    alert(data.error || 'Invalid credentials. Please try again.');
-                    console.error('Login failed:', data.error || 'Invalid credentials');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                alert(`Error connecting to server: ${error.message}. Please check if the backend is running at ${API_BASE_URL}.`);
-            }
-        }
-
-        function adminLogout() {
-            isAdminLoggedIn = false;
-            authToken = null;
-            localStorage.removeItem('authToken');
-            const adminPanel = document.getElementById('adminPanel');
-            if (adminPanel) {
-                adminPanel.classList.remove('active');
-                alert('Logged out successfully.');
-                console.log('Admin logged out');
-            }
-        }
-
-        function switchAdminTab(tabName) {
-            const tabs = document.querySelectorAll('.admin-tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            
-            const clickedTab = Array.from(tabs).find(tab => tab.textContent.toLowerCase().includes(tabName.toLowerCase()));
-            if (clickedTab) {
-                clickedTab.classList.add('active');
-            }
-            
-            const contents = document.querySelectorAll('.admin-content');
-            contents.forEach(content => content.classList.remove('active'));
-            const content = document.getElementById('admin' + tabName.charAt(0).toUpperCase() + tabName.slice(1));
-            if (content) {
-                content.classList.add('active');
-                console.log(`Switched to admin tab: ${tabName}`);
-            }
-        }
-
-        // Image preview
-        function previewImage(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('imagePreview');
-            if (file) {
-                if (!['image/jpeg', 'image/png'].includes(file.type)) {
-                    alert('Please upload a JPEG or PNG image.');
-                    event.target.value = '';
-                    preview.style.display = 'none';
-                    return;
-                }
-                if (file.size > 2 * 1024 * 1024) {
-                    alert('Image size must be less than 2MB.');
-                    event.target.value = '';
-                    preview.style.display = 'none';
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            } else {
-                preview.style.display = 'none';
-            }
-        }
-
-        // Article modal
-        async function openArticleModal(id) {
-            if (!id) {
-                console.error('No article ID provided');
-                alert('Error: No article ID provided.');
-                return;
-            }
-            try {
-                const response = await fetch(`${API_BASE_URL}/articles/${id}`);
-                if (!response.ok) {
-                    let errorMessage = `HTTP error ${response.status}: ${response.statusText}`;
-                    try {
-                        const errorData = await response.json();
-                        errorMessage = errorData.error || errorMessage;
-                    } catch {
-                        // No JSON response available
-                    }
-                    throw new Error(errorMessage);
-                }
-                const article = await response.json();
-                const modal = document.getElementById('articleModal');
-                const modalTitle = document.getElementById('modalTitle');
-                const modalMeta = document.getElementById('modalMeta');
-                const modalImage = document.getElementById('modalImage');
-                const modalContent = document.getElementById('modalContent');
-                const modalSource = document.getElementById('modalSource');
-
-                if (modal && modalTitle && modalMeta && modalContent) {
-                    modalTitle.textContent = article.title || 'Untitled';
-                    modalMeta.textContent = `${article.author || 'Unknown Author'} | ${article.date ? new Date(article.date).toLocaleDateString() : 'Unknown Date'} | ${article.readTime || 0} min read`;
-                    modalContent.innerHTML = article.content ? article.content.split('\n\n').map(para => `<p>${para}</p>`).join('') : '<p>No content available.</p>';
-                    modalSource.textContent = article.source ? `Source: ${article.source}` : '';
-                    
-                    if (article.image && modalImage) {
-                        modalImage.src = article.image;
-                        modalImage.style.display = 'block';
-                    } else if (modalImage) {
-                        modalImage.style.display = 'none';
-                    }
-
-                    modal.classList.add('active');
-                    console.log(`Opened article modal for ID: ${id}`);
-                } else {
-                    console.error('Article modal elements not found');
-                    alert('Error: Article modal elements missing.');
-                }
-            } catch (error) {
-                console.error('Error loading article:', error);
-                alert(`Failed to open article: ${error.message}. Please check if the backend is running at ${API_BASE_URL}.`);
-            }
-        }
-
-        function closeArticleModal() {
-            const modal = document.getElementById('articleModal');
-            if (modal) {
-                modal.classList.remove('active');
-                document.getElementById('modalTitle').textContent = '';
-                document.getElementById('modalMeta').textContent = '';
-                document.getElementById('modalContent').innerHTML = '';
-                document.getElementById('modalSource').textContent = '';
-                const modalImage = document.getElementById('modalImage');
-                if (modalImage) modalImage.style.display = 'none';
-                console.log('Article modal closed');
-            }
-        }
-
-        // Affiliate popups
-        function startAffiliatePopups() {
-            const popups = ['aliexpressAd', 'coohomAd', 'redmagicAd'];
-            let currentIndex = 0;
-            let activePopups = [...popups];
-
-            console.log('Initializing affiliate popups:', activePopups);
-
-            function showNextPopup() {
-                if (activePopups.length === 0) {
-                    console.log('All popups closed, stopping cycle.');
-                    return;
-                }
-
-                // Hide all popups
-                popups.forEach(id => {
-                    const popup = document.getElementById(id);
-                    if (popup) {
-                        popup.classList.remove('show');
-                    }
-                });
-
-                // Show the next active popup
-                const currentPopupId = activePopups[currentIndex];
-                const currentPopup = document.getElementById(currentPopupId);
-                if (currentPopup) {
-                    currentPopup.classList.add('show');
-                    console.log(`Showing popup: ${currentPopupId}`);
-                } else {
-                    console.warn(`Popup element ${currentPopupId} not found`);
-                }
-
-                currentIndex = (currentIndex + 1) % activePopups.length;
-                setTimeout(showNextPopup, 10000); // Cycle every 10 seconds
-            }
-
-            // Start after 5-second delay
-            setTimeout(() => {
-                console.log('Starting popup cycle');
-                showNextPopup();
-            }, 5000);
-        }
-
-        function closePopup(id) {
-            const popup = document.getElementById(id);
-            if (popup) {
-                popup.classList.remove('show');
-                console.log(`Closed popup: ${id}`);
-            }
-        }
-
-        // Contact and newsletter forms
-        async function handleContact(event) {
-            event.preventDefault();
-            const name = document.getElementById('contactName')?.value;
-            const email = document.getElementById('contactEmail')?.value;
-            const subject = document.getElementById('contactSubject')?.value;
-            const message = document.getElementById('contactMessage')?.value;
-
-            if (!name || !email || !subject || !message) {
-                alert('Please fill in all contact form fields.');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/contact`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, subject, message }),
-                });
-                if (response.ok) {
-                    alert('Message sent successfully!');
-                    document.querySelector('#contactPage form').reset();
-                    console.log('Contact form submitted successfully');
-                } else {
-                    const data = await response.json();
-                    alert(data.error || `Error sending message: HTTP ${response.status}`);
-                    console.error('Contact form error:', data.error);
-                }
-            } catch (error) {
-                console.error('Error sending contact form:', error);
-                alert(`Error sending message: ${error.message}. Please check if the backend is running at ${API_BASE_URL}.`);
-            }
-        }
-
-        async function handleNewsletter(event) {
-            event.preventDefault();
-            const email = document.getElementById('newsletterEmail')?.value;
-
-            if (!email) {
-                alert('Please enter an email address.');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/newsletter`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email }),
-                });
-                if (response.ok) {
-                    alert('Subscribed successfully!');
-                    document.getElementById('newsletterEmail').value = '';
-                    console.log('Newsletter subscription successful');
-                } else {
-                    const data = await response.json();
-                    alert(data.error || `Error subscribing to newsletter: HTTP ${response.status}`);
-                    console.error('Newsletter error:', data.error);
-                }
-            } catch (error) {
-                console.error('Error subscribing to newsletter:', error);
-                alert(`Error subscribing: ${error.message}. Please check if the backend is running at ${API_BASE_URL}.`);
-            }
-        }
-
-        async function saveSettings() {
-            const siteTitle = document.getElementById('siteTitle')?.value;
-            const siteDescription = document.getElementById('siteDescription')?.value;
-
-            if (!siteTitle || !siteDescription) {
-                alert('Please fill in all settings fields.');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/settings`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`,
-                    },
-                    body: JSON.stringify({ siteTitle, siteDescription }),
-                });
-                if (response.ok) {
-                    alert('Settings saved successfully!');
-                    console.log('Settings saved');
-                } else {
-                    const data = await response.json();
-                    alert(data.error || `Error saving settings: HTTP ${response.status}`);
-                    console.error('Settings error:', data.error);
-                }
-            } catch (error) {
-                console.error('Error saving settings:', error);
-                alert(`Error saving settings: ${error.message}. Please check if the backend is running at ${API_BASE_URL}.`);
-            }
-        }
-
-        // Persistence functions
-        async function loadArticles() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/articles`, {
-                    headers: { 'Accept': 'application/json' }
-                });
-                if (!response.ok) {
-                    let errorMessage = `HTTP error ${response.status}: ${response.statusText}`;
-                    try {
-                        const errorData = await response.json();
-                        errorMessage = errorData.error || errorMessage;
-                    } catch {
-                        // No JSON response
-                    }
-                    throw new Error(errorMessage);
-                }
-                articles = await response.json();
-                if (!Array.isArray(articles)) {
-                    throw new Error('Invalid response: Expected an array of articles.');
-                }
-                console.log('Articles loaded:', articles.length);
-                updateCategoryCounts();
-                loadFeaturedArticles();
-                loadPageContent(currentPage);
-            } catch (error) {
-                console.error('Error loading articles:', error);
-                alert(`Failed to load articles: ${error.message}. Using fallback data.`);
-                articles = [
-                    {
-                        _id: 'fallback_' + Date.now() + 1,
-                        title: "Revolutionary AI Breakthrough in Natural Language Processing",
-                        category: "AI",
-                        excerpt: "Scientists have developed a new AI model that can understand context with unprecedented accuracy.",
-                        content: "Revolutionary AI research has achieved a major breakthrough in natural language processing.\n\nKey features include enhanced reasoning capabilities, improved emotional intelligence, and revolutionary context awareness.\n\nReal-world applications span healthcare, education, and customer service.",
-                        image: "https://images.unsplash.com/photo-1516321310766-78a9951d08d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
-                        source: "ByteCast Network",
-                        date: new Date().toISOString(),
-                        author: "ByteCast Team",
-                        readTime: 4
-                    },
-                    {
-                        _id: 'fallback_' + Date.now() + 2,
-                        title: "Quantum Computing: The Next Frontier",
-                        category: "Tech",
-                        excerpt: "Quantum computers are set to revolutionize the tech industry with unmatched processing power.",
-                        content: "Quantum computing is advancing rapidly, promising to solve problems beyond the reach of classical computers.\n\nRecent developments include new qubit designs and error correction techniques.\n\nApplications include cryptography, AI, and drug discovery.",
-                        image: "https://images.unsplash.com/photo-1595675021516-1d81b1b3f7c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
-                        source: "ByteCast Network",
-                        date: new Date().toISOString(),
-                        author: "ByteCast Team",
-                        readTime: 5
-                    }
-                ];
-                updateCategoryCounts();
-                loadFeaturedArticles();
-                loadPageContent(currentPage);
-            }
-        }
-
-        function loadFeaturedArticles() {
-            const container = document.getElementById('featuredArticles');
-            if (!container) {
-                console.error('Featured articles container not found');
-                return;
-            }
-            container.innerHTML = articles.slice(0, 3).map(article => `
-                <a href="#" class="article-card" onclick="openArticleModal('${article._id}'); return false;">
-                    <div class="article-image">
-                        ${article.image ? `<img src="${article.image}" alt="${article.title}">` : 'No Image'}
-                    </div>
-                    <div class="article-content">
-                        <span class="article-category">${article.category}</span>
-                        <h3 class="article-title">${article.title}</h3>
-                        <p class="article-excerpt">${article.excerpt}</p>
-                        <div class="article-meta">
-                            <span>${article.author || 'Unknown Author'}</span>
-                            <span>${article.date ? new Date(article.date).toLocaleDateString() : 'Unknown Date'}</span>
-                        </div>
-                    </div>
-                </a>
-            `).join('');
-            console.log('Loaded featured articles');
-        }
-
-        function loadCategoryArticles(category, containerId) {
-            const container = document.getElementById(containerId);
-            if (!container) {
-                console.error(`Container ${containerId} not found`);
-                return;
-            }
-            const filteredArticles = articles.filter(article => article.category === category);
-            container.innerHTML = filteredArticles.length > 0 ? filteredArticles.map(article => `
-                <a href="#" class="article-card" onclick="openArticleModal('${article._id}'); return false;">
-                    <div class="article-image">
-                        ${article.image ? `<img src="${article.image}" alt="${article.title}">` : 'No Image'}
-                    </div>
-                    <div class="article-content">
-                        <span class="article-category">${article.category}</span>
-                        <h3 class="article-title">${article.title}</h3>
-                        <p class="article-excerpt">${article.excerpt}</p>
-                        <div class="article-meta">
-                            <span>${article.author || 'Unknown Author'}</span>
-                            <span>${article.date ? new Date(article.date).toLocaleDateString() : 'Unknown Date'}</span>
-                        </div>
-                    </div>
-                </a>
-            `).join('') : `<p style="color: var(--gray-400);">No articles found in ${category} category.</p>`;
-            console.log(`Loaded ${category} articles`);
-        }
-
-        function updateCategoryCounts() {
-            const categories = ['AI', 'Tech', 'Innovation', 'Reviews'];
-            categories.forEach(category => {
-                const count = articles.filter(article => article.category === category).length;
-                const element = document.getElementById(category.toLowerCase() + 'Count');
-                if (element) {
-                    element.textContent = `${count} article${count !== 1 ? 's' : ''}`;
-                }
-            });
-            console.log('Updated category counts');
-        }
-
-        async function createOrUpdatePost(event) {
-            event.preventDefault();
-            
-            const title = document.getElementById('postTitle')?.value;
-            const category = document.getElementById('postCategory')?.value;
-            const excerpt = document.getElementById('postExcerpt')?.value;
-            const content = document.getElementById('postContent')?.value;
-            const fileInput = document.getElementById('postImageFile');
-            const imageUrl = document.getElementById('postImageUrl')?.value;
-            const source = document.getElementById('postSource')?.value;
-
-            if (!title || !category || !excerpt || !content) {
-                alert('Please fill in all required fields.');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('title', title);
-            formData.append('category', category);
-            formData.append('excerpt', excerpt);
-            formData.append('content', content);
-            formData.append('source', source);
-            formData.append('author', 'ByteCast Team');
-            formData.append('date', new Date().toISOString());
-            formData.append('readTime', Math.ceil(content.split(' ').length / 200));
-            if (fileInput?.files[0]) {
-                formData.append('image', fileInput.files[0]);
-            } else if (imageUrl) {
-                formData.append('imageUrl', imageUrl);
-            }
-            if (currentEditingId) {
-                formData.append('id', currentEditingId);
-            }
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/articles`, {
-                    method
