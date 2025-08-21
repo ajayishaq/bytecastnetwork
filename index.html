@@ -1306,7 +1306,7 @@
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                alert('Error connecting to server. Please check if the backend is running.');
+                alert(`Error connecting to server: ${error.message}. Please check if the backend is running at ${API_BASE_URL}.`);
             }
         }
 
@@ -1358,25 +1358,176 @@
             }
         }
 
+        // Article modal
+        async function openArticleModal(id) {
+            if (!id) {
+                console.error('No article ID provided');
+                alert('Error: No article ID provided. Please try again.');
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE_URL}/articles/${id}`);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error ${response.status}: ${errorText || response.statusText}`);
+                }
+                const article = await response.json();
+                const modal = document.getElementById('articleModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const modalMeta = document.getElementById('modalMeta');
+                const modalImage = document.getElementById('modalImage');
+                const modalContent = document.getElementById('modalContent');
+                const modalSource = document.getElementById('modalSource');
+
+                modalTitle.textContent = article.title || 'Untitled';
+                modalMeta.textContent = `${article.author || 'Unknown Author'} | ${article.date ? new Date(article.date).toLocaleDateString() : 'Unknown Date'} | ${article.readTime || 0} min read`;
+                modalContent.innerHTML = article.content ? article.content.split('\n\n').map(para => `<p>${para}</p>`).join('') : '<p>No content available.</p>';
+                modalSource.textContent = article.source ? `Source: ${article.source}` : '';
+                
+                if (article.image) {
+                    modalImage.src = article.image;
+                    modalImage.style.display = 'block';
+                } else {
+                    modalImage.style.display = 'none';
+                }
+
+                modal.classList.add('active');
+            } catch (error) {
+                console.error('Error loading article:', error);
+                alert(`Failed to open article: ${error.message}. Please check if the backend is running at ${API_BASE_URL} and verify the article ID.`);
+            }
+        }
+
+        function closeArticleModal() {
+            document.getElementById('articleModal').classList.remove('active');
+            document.getElementById('modalTitle').textContent = '';
+            document.getElementById('modalMeta').textContent = '';
+            document.getElementById('modalContent').innerHTML = '';
+            document.getElementById('modalSource').textContent = '';
+            document.getElementById('modalImage').style.display = 'none';
+        }
+
+        // Affiliate popups
+        function startAffiliatePopups() {
+            const popups = ['aliexpressAd', 'coohomAd', 'redmagicAd'];
+            let currentIndex = 0;
+
+            function showNextPopup() {
+                popups.forEach(id => document.getElementById(id).classList.remove('show'));
+                document.getElementById(popups[currentIndex]).classList.add('show');
+                currentIndex = (currentIndex + 1) % popups.length;
+                setTimeout(showNextPopup, 10000); // Change popup every 10 seconds
+            }
+
+            showNextPopup();
+        }
+
+        function closePopup(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        // Contact and newsletter forms
+        async function handleContact(event) {
+            event.preventDefault();
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const subject = document.getElementById('contactSubject').value;
+            const message = document.getElementById('contactMessage').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/contact`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, subject, message }),
+                });
+                if (response.ok) {
+                    alert('Message sent successfully!');
+                    document.querySelector('#contactPage form').reset();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || `Error sending message: HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error sending contact form:', error);
+                alert(`Error sending message: ${error.message}. Please check if the backend is running at ${API_BASE_URL}.`);
+            }
+        }
+
+        async function handleNewsletter(event) {
+            event.preventDefault();
+            const email = document.getElementById('newsletterEmail').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/newsletter`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email }),
+                });
+                if (response.ok) {
+                    alert('Subscribed successfully!');
+                    document.getElementById('newsletterEmail').value = '';
+                } else {
+                    const data = await response.json();
+                    alert(data.error || `Error subscribing to newsletter: HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error subscribing to newsletter:', error);
+                alert(`Error subscribing: ${error.message}. Please check if the backend is running at ${API_BASE_URL}.`);
+            }
+        }
+
+        async function saveSettings() {
+            const siteTitle = document.getElementById('siteTitle').value;
+            const siteDescription = document.getElementById('siteDescription').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/settings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`,
+                    },
+                    body: JSON.stringify({ siteTitle, siteDescription }),
+                });
+                if (response.ok) {
+                    alert('Settings saved successfully!');
+                } else {
+                    const data = await response.json();
+                    alert(data.error || `Error saving settings: HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                alert(`Error saving settings: ${error.message}. Please check if the backend is running at ${API_BASE_URL}.`);
+            }
+        }
+
         // Persistence functions
         async function loadArticles() {
             try {
                 const response = await fetch(`${API_BASE_URL}/articles`);
                 if (!response.ok) {
-                    if (response.status === 404) {
-                        throw new Error('API endpoint not found. Check if the backend is running at the correct URL.');
-                    } else if (response.status === 500) {
-                        throw new Error('Server error. Check backend logs for details.');
-                    } else {
-                        throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
+                    let errorMessage = `HTTP error ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        // No JSON response available
                     }
+                    if (response.status === 404) {
+                        errorMessage = `API endpoint not found at ${API_BASE_URL}/articles. Check if the backend is running and the URL is correct.`;
+                    } else if (response.status === 500) {
+                        errorMessage = `Server error at ${API_BASE_URL}/articles. Check backend logs for details.`;
+                    } else if (!navigator.onLine) {
+                        errorMessage = `No internet connection. Please check your network and try again.`;
+                    }
+                    throw new Error(errorMessage);
                 }
                 articles = await response.json();
                 updateCategoryCounts();
                 loadFeaturedArticles();
                 loadPageContent(currentPage);
             } catch (error) {
-                console.error('Error loading articles:', error.message);
+                console.error('Error loading articles:', error);
                 alert(`Failed to load articles: ${error.message}. Using fallback data.`);
                 // Fallback to sample data
                 articles = [
@@ -1391,8 +1542,7 @@
                         date: new Date().toISOString(),
                         author: "ByteCast Team",
                         readTime: 4
-                    },
-                    // Add other sample articles as needed
+                    }
                 ];
                 updateCategoryCounts();
                 loadFeaturedArticles();
@@ -1449,8 +1599,8 @@
                     alert(data.error || `Error saving article: HTTP ${response.status}`);
                 }
             } catch (error) {
-                console.error('Error saving article:', error.message);
-                alert(`Error saving article: ${error.message}. Please check your connection or backend status.`);
+                console.error('Error saving article:', error);
+                alert(`Error saving article: ${error.message}. Please check if the backend is running at ${API_BASE_URL}.`);
             }
         }
 
@@ -1458,7 +1608,8 @@
             try {
                 const response = await fetch(`${API_BASE_URL}/articles/${id}`);
                 if (!response.ok) {
-                    throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error ${response.status}: ${errorText || response.statusText}`);
                 }
                 const article = await response.json();
                 if (response.ok) {
@@ -1484,8 +1635,8 @@
                     alert(article.error || 'Error loading article.');
                 }
             } catch (error) {
-                console.error('Error loading article:', error.message);
-                alert(`Error loading article: ${error.message}. Please check your connection or backend status.`);
+                console.error('Error loading article:', error);
+                alert(`Error loading article: ${error.message}. Please check if the backend is running at ${API_BASE_URL}.`);
             }
         }
 
@@ -1502,7 +1653,8 @@
             try {
                 const response = await fetch(`${API_BASE_URL}/articles`);
                 if (!response.ok) {
-                    throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error ${response.status}: ${errorText || response.statusText}`);
                 }
                 const articles = await response.json();
                 if (articles.length === 0) {
@@ -1511,267 +1663,4 @@
                 }
                 
                 container.innerHTML = articles.map(article => `
-                    <div style="background: var(--gray-900); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--gray-700);">
-                        <h4 style="color: var(--white); margin-bottom: 0.5rem;">${article.title}</h4>
-                        <p style="color: var(--gray-400); font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Category:</strong> ${article.category} | <strong>Date:</strong> ${new Date(article.date).toLocaleDateString()}</p>
-                        <p style="color: var(--gray-400); font-size: 0.9rem;">${article.excerpt.substring(0, 100)}...</p>
-                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-                            <button class="btn" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;" onclick="editArticle('${article._id}')">Edit</button>
-                            <button class="btn-danger" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;" onclick="deleteArticle('${article._id}')">Delete</button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Error loading articles for management:', error.message);
-                container.innerHTML = `<p style="color: var(--gray-400);">Error loading articles: ${error.message}</p>`;
-            }
-        }
-
-        async function deleteArticle(id) {
-            if (confirm('Are you sure you want to delete this article?')) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/articles/${id}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${authToken}` },
-                    });
-                    if (response.ok) {
-                        alert('Article deleted successfully!');
-                        await loadArticles();
-                        loadArticlesForManagement();
-                    } else {
-                        const data = await response.json();
-                        alert(data.error || `Error deleting article: HTTP ${response.status}`);
-                    }
-                } catch (error) {
-                    console.error('Error deleting article:', error.message);
-                    alert(`Error deleting article: ${error.message}. Please check your connection or backend status.`);
-                }
-            }
-        }
-
-        // Load featured articles
-        function loadFeaturedArticles() {
-            const container = document.getElementById('featuredArticles');
-            const featuredArticles = articles.slice(0, 3); // Show up to 3 articles
-            if (featuredArticles.length === 0) {
-                container.innerHTML = '<p style="color: var(--gray-400); text-align: center;">No featured articles available.</p>';
-                return;
-            }
-            container.innerHTML = featuredArticles.map(article => `
-                <a href="#" class="article-card" onclick="openArticleModal('${article._id}')">
-                    <div class="article-image">
-                        ${article.image ? `<img src="${article.image}" alt="${article.title}">` : 'No Image'}
-                    </div>
-                    <div class="article-content">
-                        <span class="article-category">${article.category}</span>
-                        <h3 class="article-title">${article.title}</h3>
-                        <p class="article-excerpt">${article.excerpt}</p>
-                        <div class="article-meta">
-                            <span>${new Date(article.date).toLocaleDateString()}</span>
-                            <span>${article.readTime} min read</span>
-                        </div>
-                    </div>
-                </a>
-            `).join('');
-        }
-
-        // Load category articles
-        function loadCategoryArticles(category, containerId) {
-            const container = document.getElementById(containerId);
-            const filteredArticles = articles.filter(article => article.category === category);
-            if (filteredArticles.length === 0) {
-                container.innerHTML = `<p style="color: var(--gray-400); text-align: center;">No ${category} articles available.</p>`;
-                return;
-            }
-            container.innerHTML = filteredArticles.map(article => `
-                <a href="#" class="article-card" onclick="openArticleModal('${article._id}')">
-                    <div class="article-image">
-                        ${article.image ? `<img src="${article.image}" alt="${article.title}">` : 'No Image'}
-                    </div>
-                    <div class="article-content">
-                        <span class="article-category">${article.category}</span>
-                        <h3 class="article-title">${article.title}</h3>
-                        <p class="article-excerpt">${article.excerpt}</p>
-                        <div class="article-meta">
-                            <span>${new Date(article.date).toLocaleDateString()}</span>
-                            <span>${article.readTime} min read</span>
-                        </div>
-                    </div>
-                </a>
-            `).join('');
-        }
-
-        // Update category counts
-        function updateCategoryCounts() {
-            const categories = ['AI', 'Tech', 'Innovation', 'Reviews'];
-            categories.forEach(category => {
-                const count = articles.filter(article => article.category === category).length;
-                const element = document.getElementById(`${category.toLowerCase()}Count`);
-                if (element) {
-                    element.textContent = `${count} article${count !== 1 ? 's' : ''}`;
-                }
-            });
-        }
-
-        // Article modal
-        async function openArticleModal(id) {
-            try {
-                const response = await fetch(`${API_BASE_URL}/articles/${id}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
-                }
-                const article = await response.json();
-                if (response.ok) {
-                    document.getElementById('modalTitle').textContent = article.title;
-                    document.getElementById('modalMeta').textContent = `${article.author} | ${new Date(article.date).toLocaleDateString()} | ${article.readTime} min read`;
-                    document.getElementById('modalContent').innerHTML = article.content.split('\n\n').map(para => `<p>${para}</p>`).join('');
-                    const modalImage = document.getElementById('modalImage');
-                    if (article.image) {
-                        modalImage.src = article.image;
-                        modalImage.style.display = 'block';
-                    } else {
-                        modalImage.style.display = 'none';
-                    }
-                    document.getElementById('modalSource').textContent = `Source: ${article.source || 'ByteCast Network'}`;
-                    document.getElementById('articleModal').classList.add('active');
-                } else {
-                    alert(article.error || 'Error loading article.');
-                }
-            } catch (error) {
-                console.error('Error loading article:', error.message);
-                alert(`Error loading article: ${error.message}. Please check your connection or backend status.`);
-            }
-        }
-
-        function closeArticleModal() {
-            document.getElementById('articleModal').classList.remove('active');
-        }
-
-        // Affiliate popups
-        function startAffiliatePopups() {
-            const popups = ['aliexpressAd', 'coohomAd', 'redmagicAd'];
-            let currentIndex = 0;
-
-            function showNextPopup() {
-                popups.forEach(popup => document.getElementById(popup).classList.remove('show'));
-                document.getElementById(popups[currentIndex]).classList.add('show');
-                currentIndex = (currentIndex + 1) % popups.length;
-                setTimeout(showNextPopup, 10000); // Rotate every 10 seconds
-            }
-
-            showNextPopup();
-        }
-
-        function closePopup(popupId) {
-            document.getElementById(popupId).classList.remove('show');
-        }
-
-        // Contact form
-        async function handleContact(event) {
-            event.preventDefault();
-            const name = document.getElementById('contactName').value;
-            const email = document.getElementById('contactEmail').value;
-            const subject = document.getElementById('contactSubject').value;
-            const message = document.getElementById('contactMessage').value;
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/contact`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, subject, message }),
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    alert('Message sent successfully!');
-                    event.target.reset();
-                } else {
-                    alert(data.error || `Error sending message: HTTP ${response.status}`);
-                }
-            } catch (error) {
-                console.error('Error sending contact form:', error.message);
-                alert(`Error sending message: ${error.message}. Please check your connection or backend status.`);
-            }
-        }
-
-        // Newsletter signup
-        async function handleNewsletter(event) {
-            event.preventDefault();
-            const email = document.getElementById('newsletterEmail').value;
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/newsletter`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email }),
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    alert('Subscribed successfully!');
-                    event.target.reset();
-                } else {
-                    alert(data.error || `Error subscribing: HTTP ${response.status}`);
-                }
-            } catch (error) {
-                console.error('Error subscribing to newsletter:', error.message);
-                alert(`Error subscribing: ${error.message}. Please check your connection or backend status.`);
-            }
-        }
-
-        // Save settings (placeholder)
-        function saveSettings() {
-            const title = document.getElementById('siteTitle').value;
-            const description = document.getElementById('siteDescription').value;
-            alert(`Settings saved:\nTitle: ${title}\nDescription: ${description}`);
-            // TODO: Implement actual settings persistence
-        }
-    </script>
-</body>
-</html>
-```
-
-### Steps to Update on GitHub
-1. **Save the File Locally**:
-   - Copy the above `index.html` content into a file named `index.html`.
-   - Save it in your local project directory (e.g., `path/to/your/repository`).
-   - If you already have an `index.html`, overwrite it with this version.
-
-2. **Commit and Push to GitHub**:
-   - Open a terminal and navigate to your repository:
-     ```bash
-     cd path/to/your/repository
-     ```
-   - Stage the updated file:
-     ```bash
-     git add index.html
-     ```
-   - Commit the changes:
-     ```bash
-     git commit -m "Fix runtime error in loadArticles with improved error handling and update index.html"
-     ```
-   - Push to GitHub:
-     ```bash
-     git push origin main
-     ```
-     - Replace `main` with your branch name if different (e.g., `master`).
-
-3. **Verify Backend Setup**:
-   - Ensure your backend (`server.js`) is running and accessible at `http://localhost:3000/api` for local testing.
-   - Use the provided `server.js` from the previous response:
-     <xaiArtifact artifact_id="e799ca3c-e94c-48e3-810e-a6d925a0cd32" artifact_version_id="65cd58d5-4462-4bac-95be-b57248880cba" title="server.js" contentType="text/javascript">
-     ```javascript
-     const express = require('express');
-     const mongoose = require('mongoose');
-     const dotenv = require('dotenv');
-     const jwt = require('jsonwebtoken');
-     const bcrypt = require('bcryptjs');
-     const multer = require('multer');
-     const cloudinary = require('cloudinary').v2;
-     const cors = require('cors');
-     const { body, validationResult } = require('express-validator');
-
-     dotenv.config();
-     const app = express();
-
-     // Middleware
-     app.use(cors({
-       origin: ['http://localhost:3000', 'https://username.github.io'], // Adjust
+                    <div style="background: var(--gray-900); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid
