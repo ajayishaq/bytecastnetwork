@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -233,7 +234,7 @@
             box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
         }
         
-        /* AdSense Banner */
+        /* Ad Banner */
         .ad-banner {
             text-align: center;
             margin: 2rem 0;
@@ -241,19 +242,6 @@
             background: var(--gray-900);
             border-radius: 10px;
             border: 1px solid var(--gray-800);
-        }
-        
-        .ad-placeholder {
-            width: 728px;
-            height: 90px;
-            background: var(--gray-800);
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--gray-400);
-            border-radius: 5px;
-            border: 1px dashed var(--gray-600);
         }
         
         /* Featured Section */
@@ -581,6 +569,15 @@
             background: var(--gray-500);
         }
 
+        /* Image Preview */
+        .image-preview {
+            margin-top: 1rem;
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            display: none;
+        }
+
         /* Popup Affiliate Ads */
         .popup-ad {
             position: fixed;
@@ -694,7 +691,7 @@
             background: var(--gray-900);
             color: var(--white);
             padding: 3rem 0 1rem;
-            border-top: 2px solidify var(--gray-800);
+            border-top: 2px solid var(--gray-800);
         }
         
         .footer-content {
@@ -764,12 +761,6 @@
             .popup-ad {
                 max-width: 280px;
                 margin: 0 20px;
-            }
-
-            .ad-placeholder {
-                width: 100%;
-                max-width: 320px;
-                height: 50px;
             }
         }
         
@@ -979,8 +970,10 @@
                         <textarea id="postContent" rows="10" required placeholder="Write your full article content here. Use double newlines for paragraphs."></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Article Image URL (optional)</label>
-                        <input type="url" id="postImage" placeholder="Paste image URL">
+                        <label>Article Image (Upload or URL)</label>
+                        <input type="file" id="postImageFile" accept="image/jpeg,image/png" onchange="previewImage(event)">
+                        <input type="url" id="postImageUrl" placeholder="Or paste image URL" style="margin-top: 0.5rem;">
+                        <img id="imagePreview" class="image-preview" alt="Image Preview">
                     </div>
                     <div class="form-group">
                         <label>Source (optional)</label>
@@ -1029,11 +1022,13 @@
                 </div>
             </section>
 
-            <!-- Google AdSense Banner -->
+            <!-- A-ADS Banner -->
             <section class="ad-banner">
                 <div class="container">
-                    <div class="ad-placeholder">
-                        Google AdSense Banner Space (728x90)
+                    <div id="frame" style="width: 100%; margin: auto; background: rgba(0, 0, 0, 0.50); position: relative; z-index: 1500;">
+                        <iframe data-aa='2407511' src='//acceptable.a-ads.com/2407511/?size=Adaptive'
+                                style='border: 0; padding: 0; width: 100%; max-width: 728px; height: auto; overflow: hidden; display: block; margin: auto;'
+                                title="A-ADS Advertisement"></iframe>
                     </div>
                 </div>
             </section>
@@ -1135,19 +1130,19 @@
                         <form class="content-form" onsubmit="handleContact(event)">
                             <div class="form-group">
                                 <label>Name</label>
-                                <input type="text" required>
+                                <input type="text" id="contactName" required>
                             </div>
                             <div class="form-group">
                                 <label>Email</label>
-                                <input type="email" required>
+                                <input type="email" id="contactEmail" required>
                             </div>
                             <div class="form-group">
                                 <label>Subject</label>
-                                <input type="text" required>
+                                <input type="text" id="contactSubject" required>
                             </div>
                             <div class="form-group">
                                 <label>Message</label>
-                                <textarea rows="6" required></textarea>
+                                <textarea id="contactMessage" rows="6" required></textarea>
                             </div>
                             <button type="submit" class="btn">Send Message</button>
                         </form>
@@ -1192,7 +1187,7 @@
                     <h3>Newsletter</h3>
                     <p style="color: var(--gray-400); margin-bottom: 1rem;">Stay updated with the latest tech news and insights.</p>
                     <form onsubmit="handleNewsletter(event)" style="display: flex; gap: 0.5rem;">
-                        <input type="email" placeholder="Your email" style="flex: 1; padding: 0.5rem; background: var(--gray-800); border: 1px solid var(--gray-600); border-radius: 5px; color: var(--white);" required>
+                        <input type="email" id="newsletterEmail" placeholder="Your email" style="flex: 1; padding: 0.5rem; background: var(--gray-800); border: 1px solid var(--gray-600); border-radius: 5px; color: var(--white);" required>
                         <button type="submit" style="padding: 0.5rem 1rem; background: var(--white); color: var(--black); border: none; border-radius: 5px; font-weight: bold;">Subscribe</button>
                     </form>
                 </div>
@@ -1209,12 +1204,8 @@
         let isAdminLoggedIn = false;
         let currentPage = 'home';
         let currentEditingId = null;
-
-        // Admin credentials (Change these for security)
-        const ADMIN_USERNAME = 'bytecast_admin';
-        const ADMIN_PASSWORD = 'ByteCast#2024!Secure';
-
-        const STORAGE_KEY = 'bytecast_articles';
+        let authToken = null;
+        const API_BASE_URL = 'http://localhost:3000/api'; // Update to your backend URL if hosted
 
         // Initialize the website
         document.addEventListener('DOMContentLoaded', function() {
@@ -1222,13 +1213,26 @@
             loadFeaturedArticles();
             updateCategoryCounts();
             startAffiliatePopups();
+            checkAdminToken();
         });
+
+        // Check for existing admin token
+        function checkAdminToken() {
+            authToken = localStorage.getItem('authToken');
+            if (authToken) {
+                isAdminLoggedIn = true;
+                document.getElementById('adminPanel').classList.add('active');
+                loadArticlesForManagement();
+            }
+        }
 
         // Admin access
         document.addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.keyCode === 65)) {
                 e.preventDefault();
-                openAdminModal();
+                if (!isAdminLoggedIn) {
+                    openAdminModal();
+                }
             }
         });
 
@@ -1278,23 +1282,38 @@
             document.getElementById('adminPassword').value = '';
         }
 
-        function adminLogin() {
+        async function adminLogin() {
             const username = document.getElementById('adminUsername').value;
             const password = document.getElementById('adminPassword').value;
             
-            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-                isAdminLoggedIn = true;
-                document.getElementById('adminPanel').classList.add('active');
-                closeAdminModal();
-                loadArticlesForManagement();
-                alert('Welcome to ByteCast Admin Panel!');
-            } else {
-                alert('Invalid credentials. Please try again.');
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    authToken = data.token;
+                    localStorage.setItem('authToken', authToken);
+                    isAdminLoggedIn = true;
+                    document.getElementById('adminPanel').classList.add('active');
+                    closeAdminModal();
+                    loadArticlesForManagement();
+                    alert('Welcome to ByteCast Admin Panel!');
+                } else {
+                    alert(data.error || 'Invalid credentials. Please try again.');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Error connecting to server. Please check if the backend is running.');
             }
         }
 
         function adminLogout() {
             isAdminLoggedIn = false;
+            authToken = null;
+            localStorage.removeItem('authToken');
             document.getElementById('adminPanel').classList.remove('active');
             alert('Logged out successfully.');
         }
@@ -1311,124 +1330,162 @@
             document.getElementById('admin' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.add('active');
         }
 
-        // Persistence functions
-        function loadArticles() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            articles = saved ? JSON.parse(saved) : [];
-            if (articles.length === 0) {
-                loadSampleData();
-                saveArticles();
+        // Image preview
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            if (file) {
+                if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                    alert('Please upload a JPEG or PNG image.');
+                    event.target.value = '';
+                    preview.style.display = 'none';
+                    return;
+                }
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Image size must be less than 2MB.');
+                    event.target.value = '';
+                    preview.style.display = 'none';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
             }
         }
 
-        function saveArticles() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
-        }
-
-        function loadSampleData() {
-            articles = [
-                {
-                    id: Date.now() + 1,
-                    title: "Revolutionary AI Breakthrough in Natural Language Processing",
-                    category: "AI",
-                    excerpt: "Scientists have developed a new AI model that can understand context with unprecedented accuracy, marking a significant leap in natural language processing technology.",
-                    content: "Revolutionary AI research has achieved a major breakthrough in natural language processing. The new system demonstrates unprecedented understanding of human context and nuance.\n\nKey features include enhanced reasoning capabilities, improved emotional intelligence, and revolutionary context awareness that maintains coherent conversations across extended interactions.\n\nReal-world applications span healthcare diagnosis support, personalized education, and advanced customer service systems. Early testing shows remarkable improvements in accuracy and user satisfaction.\n\nExperts believe this represents the beginning of a new era in AI development, with future generations promising even more sophisticated capabilities.",
-                    image: null,
-                    source: "ByteCast Network",
-                    date: new Date().toLocaleDateString(),
-                    author: "ByteCast Team",
-                    readTime: 4
-                },
-                {
-                    id: Date.now() + 2,
-                    title: "The Future of Smartphone Technology: What to Expect in 2024",
-                    category: "Tech",
-                    excerpt: "From foldable displays to advanced camera systems, we explore the cutting-edge technologies that will define the next generation of smartphones.",
-                    content: "The smartphone industry continues to evolve rapidly, with 2024 bringing revolutionary changes in how we interact with our devices.\n\nFoldable smartphones are transitioning from experimental to mainstream, featuring improved hinges and durable screens. Battery optimization for dual-screen usage has reached new heights.\n\nCamera technology advances include periscope zoom lenses offering optical zoom capabilities that rival dedicated cameras. Night mode photography and AI-powered scene recognition have dramatically improved.\n\nProcessing power has reached desktop-class performance with 5nm manufacturing processes and dedicated AI processing units. 5G networks and Wi-Fi 7 support ensure blazing-fast connectivity.",
-                    image: null,
-                    source: "ByteCast Network",
-                    date: new Date().toLocaleDateString(),
-                    author: "ByteCast Team",
-                    readTime: 3
-                },
-                {
-                    id: Date.now() + 3,
-                    title: "Startup Innovation: How Young Companies Are Reshaping Industries",
-                    category: "Innovation",
-                    excerpt: "Discover how innovative startups are disrupting traditional industries and creating new opportunities in the digital economy.",
-                    content: "Modern startups are leveraging advanced technologies to challenge established business models across every industry.\n\nArtificial intelligence and machine learning form the backbone of many ventures, enabling automation and insights that drive efficiency. Cloud computing has democratized access to enterprise-grade infrastructure.\n\nFintech startups have transformed financial services with digital banks, cryptocurrency platforms, and accessible investment tools. Healthcare innovation includes telemedicine, AI diagnostics, and personalized medicine.\n\nSustainability-focused startups are developing clean technology solutions, from electric vehicles to renewable energy storage, addressing environmental concerns while creating new markets.",
-                    image: null,
-                    source: "ByteCast Network",
-                    date: new Date().toLocaleDateString(),
-                    author: "ByteCast Team",
-                    readTime: 3
-                },
-                {
-                    id: Date.now() + 4,
-                    title: "Gaming Revolution: Next-Gen Consoles vs PC Gaming",
-                    category: "Reviews",
-                    excerpt: "A comprehensive comparison of the latest gaming platforms, analyzing performance, exclusive titles, and value proposition for different types of gamers.",
-                    content: "The gaming industry has reached an inflection point where both console and PC platforms offer compelling experiences for different gaming preferences.\n\nNext-generation consoles deliver impressive performance with optimized hardware achieving 4K gaming and ray tracing. PC gaming maintains advantages in raw power and customization options.\n\nConsole exclusives remain major differentiators, while PC gaming benefits from the largest game library and extensive backward compatibility. Cross-platform play has reduced the importance of exclusives for multiplayer gaming.\n\nValue proposition varies by user type: consoles offer excellent value for casual gamers, while PC gaming appeals to enthusiasts who value customization and superior performance potential.",
-                    image: null,
-                    source: "ByteCast Network",
-                    date: new Date().toLocaleDateString(),
-                    author: "ByteCast Team",
-                    readTime: 4
+        // Persistence functions
+        async function loadArticles() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/articles`);
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('API endpoint not found. Check if the backend is running at the correct URL.');
+                    } else if (response.status === 500) {
+                        throw new Error('Server error. Check backend logs for details.');
+                    } else {
+                        throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
+                    }
                 }
-            ];
+                articles = await response.json();
+                updateCategoryCounts();
+                loadFeaturedArticles();
+                loadPageContent(currentPage);
+            } catch (error) {
+                console.error('Error loading articles:', error.message);
+                alert(`Failed to load articles: ${error.message}. Using fallback data.`);
+                // Fallback to sample data
+                articles = [
+                    {
+                        _id: Date.now() + 1,
+                        title: "Revolutionary AI Breakthrough in Natural Language Processing",
+                        category: "AI",
+                        excerpt: "Scientists have developed a new AI model that can understand context with unprecedented accuracy.",
+                        content: "Revolutionary AI research has achieved a major breakthrough in natural language processing.\n\nKey features include enhanced reasoning capabilities, improved emotional intelligence, and revolutionary context awareness.\n\nReal-world applications span healthcare, education, and customer service.",
+                        image: "https://images.unsplash.com/photo-1516321310766-78a9951d08d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
+                        source: "ByteCast Network",
+                        date: new Date().toISOString(),
+                        author: "ByteCast Team",
+                        readTime: 4
+                    },
+                    // Add other sample articles as needed
+                ];
+                updateCategoryCounts();
+                loadFeaturedArticles();
+                loadPageContent(currentPage);
+            }
         }
 
-        // Create or Update post
-        function createOrUpdatePost(event) {
+        async function createOrUpdatePost(event) {
             event.preventDefault();
             
+            const title = document.getElementById('postTitle').value;
+            const category = document.getElementById('postCategory').value;
+            const excerpt = document.getElementById('postExcerpt').value;
             const content = document.getElementById('postContent').value;
-            const post = {
-                title: document.getElementById('postTitle').value,
-                category: document.getElementById('postCategory').value,
-                excerpt: document.getElementById('postExcerpt').value,
-                content: content,
-                image: document.getElementById('postImage').value || null,
-                source: document.getElementById('postSource').value || 'ByteCast Network',
-                date: new Date().toLocaleDateString(),
-                author: 'ByteCast Team',
-                readTime: Math.ceil(content.split(' ').length / 200)
-            };
+            const fileInput = document.getElementById('postImageFile');
+            const imageUrl = document.getElementById('postImageUrl').value;
+            const source = document.getElementById('postSource').value;
 
-            if (currentEditingId) {
-                const index = articles.findIndex(a => a.id === currentEditingId);
-                if (index !== -1) {
-                    post.id = currentEditingId;
-                    post.date = articles[index].date; // Keep original date
-                    articles[index] = post;
-                    alert('Article updated successfully!');
-                }
-            } else {
-                post.id = Date.now();
-                articles.unshift(post);
-                alert('Article published successfully!');
+            if (!title || !category || !excerpt || !content) {
+                alert('Please fill in all required fields.');
+                return;
             }
-            
-            saveArticles();
-            cancelEdit();
-            updateCategoryCounts();
-            loadFeaturedArticles();
-            loadPageContent(currentPage);
-            loadArticlesForManagement();
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('category', category);
+            formData.append('excerpt', excerpt);
+            formData.append('content', content);
+            formData.append('source', source);
+            if (fileInput.files[0]) {
+                formData.append('image', fileInput.files[0]);
+            } else if (imageUrl) {
+                formData.append('imageUrl', imageUrl);
+            }
+            if (currentEditingId) {
+                formData.append('id', currentEditingId);
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/articles`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                    },
+                    body: formData,
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    alert(currentEditingId ? 'Article updated successfully!' : 'Article published successfully!');
+                    cancelEdit();
+                    await loadArticles();
+                    loadArticlesForManagement();
+                } else {
+                    alert(data.error || `Error saving article: HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error saving article:', error.message);
+                alert(`Error saving article: ${error.message}. Please check your connection or backend status.`);
+            }
         }
 
-        function editArticle(id) {
-            const article = articles.find(a => a.id === id);
-            if (article) {
-                currentEditingId = id;
-                switchAdminTab('create');
-                document.getElementById('postTitle').value = article.title;
-                document.getElementById('postCategory').value = article.category;
-                document.getElementById('postExcerpt').value = article.excerpt;
-                document.getElementById('postContent').value = article.content;
-                document.getElementById('postImage').value = article.image || '';
-                document.getElementById('postSource').value = article.source;
-                document.getElementById('publishButton').textContent = 'Update Article';
+        async function editArticle(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/articles/${id}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
+                }
+                const article = await response.json();
+                if (response.ok) {
+                    currentEditingId = article._id;
+                    switchAdminTab('create');
+                    document.getElementById('postTitle').value = article.title;
+                    document.getElementById('postCategory').value = article.category;
+                    document.getElementById('postExcerpt').value = article.excerpt;
+                    document.getElementById('postContent').value = article.content;
+                    document.getElementById('postImageUrl').value = article.image || '';
+                    document.getElementById('postSource').value = article.source;
+                    document.getElementById('publishButton').textContent = 'Update Article';
+                    
+                    const preview = document.getElementById('imagePreview');
+                    if (article.image) {
+                        preview.src = article.image;
+                        preview.style.display = 'block';
+                    } else {
+                        preview.style.display = 'none';
+                    }
+                    document.getElementById('postImageFile').value = '';
+                } else {
+                    alert(article.error || 'Error loading article.');
+                }
+            } catch (error) {
+                console.error('Error loading article:', error.message);
+                alert(`Error loading article: ${error.message}. Please check your connection or backend status.`);
             }
         }
 
@@ -1436,124 +1493,153 @@
             currentEditingId = null;
             document.querySelector('#adminCreate form').reset();
             document.getElementById('publishButton').textContent = 'Publish Article';
+            document.getElementById('imagePreview').style.display = 'none';
         }
 
-        function loadArticlesForManagement() {
+        async function loadArticlesForManagement() {
+            if (!isAdminLoggedIn) return;
             const container = document.getElementById('articlesList');
-            if (articles.length === 0) {
-                container.innerHTML = '<p style="color: var(--gray-400);">No articles found.</p>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/articles`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
+                }
+                const articles = await response.json();
+                if (articles.length === 0) {
+                    container.innerHTML = '<p style="color: var(--gray-400);">No articles found.</p>';
+                    return;
+                }
+                
+                container.innerHTML = articles.map(article => `
+                    <div style="background: var(--gray-900); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--gray-700);">
+                        <h4 style="color: var(--white); margin-bottom: 0.5rem;">${article.title}</h4>
+                        <p style="color: var(--gray-400); font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Category:</strong> ${article.category} | <strong>Date:</strong> ${new Date(article.date).toLocaleDateString()}</p>
+                        <p style="color: var(--gray-400); font-size: 0.9rem;">${article.excerpt.substring(0, 100)}...</p>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                            <button class="btn" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;" onclick="editArticle('${article._id}')">Edit</button>
+                            <button class="btn-danger" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;" onclick="deleteArticle('${article._id}')">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading articles for management:', error.message);
+                container.innerHTML = `<p style="color: var(--gray-400);">Error loading articles: ${error.message}</p>`;
+            }
+        }
+
+        async function deleteArticle(id) {
+            if (confirm('Are you sure you want to delete this article?')) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/articles/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${authToken}` },
+                    });
+                    if (response.ok) {
+                        alert('Article deleted successfully!');
+                        await loadArticles();
+                        loadArticlesForManagement();
+                    } else {
+                        const data = await response.json();
+                        alert(data.error || `Error deleting article: HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error('Error deleting article:', error.message);
+                    alert(`Error deleting article: ${error.message}. Please check your connection or backend status.`);
+                }
+            }
+        }
+
+        // Load featured articles
+        function loadFeaturedArticles() {
+            const container = document.getElementById('featuredArticles');
+            const featuredArticles = articles.slice(0, 3); // Show up to 3 articles
+            if (featuredArticles.length === 0) {
+                container.innerHTML = '<p style="color: var(--gray-400); text-align: center;">No featured articles available.</p>';
                 return;
             }
-            
-            container.innerHTML = articles.map(article => `
-                <div style="background: var(--gray-900); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--gray-700);">
-                    <h4 style="color: var(--white); margin-bottom: 0.5rem;">${article.title}</h4>
-                    <p style="color: var(--gray-400); font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Category:</strong> ${article.category} | <strong>Date:</strong> ${article.date}</p>
-                    <p style="color: var(--gray-400); font-size: 0.9rem;">${article.excerpt.substring(0, 100)}...</p>
-                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-                        <button class="btn" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;" onclick="editArticle(${article.id})">Edit</button>
-                        <button class="btn-danger" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;" onclick="deleteArticle(${article.id})">Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function deleteArticle(id) {
-            if (confirm('Are you sure you want to delete this article?')) {
-                articles = articles.filter(article => article.id !== id);
-                saveArticles();
-                loadArticlesForManagement();
-                updateCategoryCounts();
-                loadFeaturedArticles();
-                loadPageContent(currentPage);
-                alert('Article deleted successfully!');
-            }
-        }
-
-        function saveSettings() {
-            alert('Settings saved successfully!');
-        }
-
-        // Create article card HTML
-        function createArticleCard(article) {
-            return `
-                <div class="article-card" onclick="viewArticle(${article.id})">
+            container.innerHTML = featuredArticles.map(article => `
+                <a href="#" class="article-card" onclick="openArticleModal('${article._id}')">
                     <div class="article-image">
-                        ${article.image ? `<img src="${article.image}" alt="${article.title}">` : article.category + ' Article'}
+                        ${article.image ? `<img src="${article.image}" alt="${article.title}">` : 'No Image'}
                     </div>
                     <div class="article-content">
                         <span class="article-category">${article.category}</span>
                         <h3 class="article-title">${article.title}</h3>
                         <p class="article-excerpt">${article.excerpt}</p>
                         <div class="article-meta">
-                            <span>${article.date}</span>
+                            <span>${new Date(article.date).toLocaleDateString()}</span>
                             <span>${article.readTime} min read</span>
                         </div>
                     </div>
-                </div>
-            `;
+                </a>
+            `).join('');
         }
 
-        // Load featured articles
-        function loadFeaturedArticles() {
-            const container = document.getElementById('featuredArticles');
-            if (!container) return;
-            
-            const featuredArticles = articles.slice(0, 6);
-            container.innerHTML = featuredArticles.map(article => createArticleCard(article)).join('');
-        }
-
-        // Load articles by category
+        // Load category articles
         function loadCategoryArticles(category, containerId) {
             const container = document.getElementById(containerId);
-            if (!container) return;
-            
-            const categoryArticles = articles.filter(article => article.category === category);
-            
-            if (categoryArticles.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 3rem; color: var(--gray-400);">
-                        <h3>No articles found in this category yet.</h3>
-                        <p>Check back soon for new content!</p>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = categoryArticles.map(article => createArticleCard(article)).join('');
+            const filteredArticles = articles.filter(article => article.category === category);
+            if (filteredArticles.length === 0) {
+                container.innerHTML = `<p style="color: var(--gray-400); text-align: center;">No ${category} articles available.</p>`;
+                return;
             }
+            container.innerHTML = filteredArticles.map(article => `
+                <a href="#" class="article-card" onclick="openArticleModal('${article._id}')">
+                    <div class="article-image">
+                        ${article.image ? `<img src="${article.image}" alt="${article.title}">` : 'No Image'}
+                    </div>
+                    <div class="article-content">
+                        <span class="article-category">${article.category}</span>
+                        <h3 class="article-title">${article.title}</h3>
+                        <p class="article-excerpt">${article.excerpt}</p>
+                        <div class="article-meta">
+                            <span>${new Date(article.date).toLocaleDateString()}</span>
+                            <span>${article.readTime} min read</span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
         }
 
         // Update category counts
         function updateCategoryCounts() {
             const categories = ['AI', 'Tech', 'Innovation', 'Reviews'];
-            
             categories.forEach(category => {
                 const count = articles.filter(article => article.category === category).length;
-                const elementId = category.toLowerCase() + 'Count';
-                const element = document.getElementById(elementId);
+                const element = document.getElementById(`${category.toLowerCase()}Count`);
                 if (element) {
                     element.textContent = `${count} article${count !== 1 ? 's' : ''}`;
                 }
             });
         }
 
-        // View article
-        function viewArticle(id) {
-            const article = articles.find(a => a.id === id);
-            if (article) {
-                document.getElementById('modalTitle').textContent = article.title;
-                document.getElementById('modalMeta').textContent = `${article.category} | By ${article.author} | ${article.date} | ${article.readTime} min read`;
-                
-                const imageElement = document.getElementById('modalImage');
-                if (article.image) {
-                    imageElement.src = article.image;
-                    imageElement.style.display = 'block';
-                } else {
-                    imageElement.style.display = 'none';
+        // Article modal
+        async function openArticleModal(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/articles/${id}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
                 }
-                
-                document.getElementById('modalContent').innerHTML = article.content.split('\n\n').map(para => `<p>${para.replace(/\n/g, '<br>')}</p>`).join('');
-                document.getElementById('modalSource').textContent = `Source: ${article.source}`;
-                document.getElementById('articleModal').classList.add('active');
+                const article = await response.json();
+                if (response.ok) {
+                    document.getElementById('modalTitle').textContent = article.title;
+                    document.getElementById('modalMeta').textContent = `${article.author} | ${new Date(article.date).toLocaleDateString()} | ${article.readTime} min read`;
+                    document.getElementById('modalContent').innerHTML = article.content.split('\n\n').map(para => `<p>${para}</p>`).join('');
+                    const modalImage = document.getElementById('modalImage');
+                    if (article.image) {
+                        modalImage.src = article.image;
+                        modalImage.style.display = 'block';
+                    } else {
+                        modalImage.style.display = 'none';
+                    }
+                    document.getElementById('modalSource').textContent = `Source: ${article.source || 'ByteCast Network'}`;
+                    document.getElementById('articleModal').classList.add('active');
+                } else {
+                    alert(article.error || 'Error loading article.');
+                }
+            } catch (error) {
+                console.error('Error loading article:', error.message);
+                alert(`Error loading article: ${error.message}. Please check your connection or backend status.`);
             }
         }
 
@@ -1561,57 +1647,131 @@
             document.getElementById('articleModal').classList.remove('active');
         }
 
-        // Handle contact form
-        function handleContact(event) {
-            event.preventDefault();
-            alert('Thank you for your message! We\'ll get back to you soon.');
-            event.target.reset();
-        }
-
-        // Handle newsletter signup
-        function handleNewsletter(event) {
-            event.preventDefault();
-            const email = event.target.querySelector('input[type="email"]').value;
-            alert(`Thank you for subscribing with ${email}! You'll receive our latest updates.`);
-            event.target.reset();
-        }
-
-        // Affiliate popup management
+        // Affiliate popups
         function startAffiliatePopups() {
-            setTimeout(() => showPopup('aliexpressAd'), 10000);
-            setTimeout(() => showPopup('coohomAd'), 25000);
-            setTimeout(() => showPopup('redmagicAd'), 40000);
-        }
+            const popups = ['aliexpressAd', 'coohomAd', 'redmagicAd'];
+            let currentIndex = 0;
 
-        function showPopup(popupId) {
-            const popup = document.getElementById(popupId);
-            if (popup && !popup.classList.contains('show')) {
-                popup.classList.add('show');
-                setTimeout(() => closePopup(popupId), 15000);
+            function showNextPopup() {
+                popups.forEach(popup => document.getElementById(popup).classList.remove('show'));
+                document.getElementById(popups[currentIndex]).classList.add('show');
+                currentIndex = (currentIndex + 1) % popups.length;
+                setTimeout(showNextPopup, 10000); // Rotate every 10 seconds
             }
+
+            showNextPopup();
         }
 
         function closePopup(popupId) {
-            const popup = document.getElementById(popupId);
-            if (popup) {
-                popup.classList.remove('show');
+            document.getElementById(popupId).classList.remove('show');
+        }
+
+        // Contact form
+        async function handleContact(event) {
+            event.preventDefault();
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const subject = document.getElementById('contactSubject').value;
+            const message = document.getElementById('contactMessage').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/contact`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, subject, message }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Message sent successfully!');
+                    event.target.reset();
+                } else {
+                    alert(data.error || `Error sending message: HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error sending contact form:', error.message);
+                alert(`Error sending message: ${error.message}. Please check your connection or backend status.`);
             }
         }
 
-        // Close popup when clicking the ad
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.popup-ad-btn')) {
-                const popup = e.target.closest('.popup-ad');
-                if (popup) {
-                    popup.classList.remove('show');
-                }
-            }
-        });
+        // Newsletter signup
+        async function handleNewsletter(event) {
+            event.preventDefault();
+            const email = document.getElementById('newsletterEmail').value;
 
-        console.log('ByteCast Network loaded successfully!');
-        console.log('Admin access: Ctrl+Shift+A');
-        console.log('Credentials: bytecast_admin / ByteCast#2024!Secure');
-        console.log('Note: Articles are now persisted in localStorage. Full article view added. Edit functionality implemented.');
+            try {
+                const response = await fetch(`${API_BASE_URL}/newsletter`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Subscribed successfully!');
+                    event.target.reset();
+                } else {
+                    alert(data.error || `Error subscribing: HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error subscribing to newsletter:', error.message);
+                alert(`Error subscribing: ${error.message}. Please check your connection or backend status.`);
+            }
+        }
+
+        // Save settings (placeholder)
+        function saveSettings() {
+            const title = document.getElementById('siteTitle').value;
+            const description = document.getElementById('siteDescription').value;
+            alert(`Settings saved:\nTitle: ${title}\nDescription: ${description}`);
+            // TODO: Implement actual settings persistence
+        }
     </script>
 </body>
 </html>
+```
+
+### Steps to Update on GitHub
+1. **Save the File Locally**:
+   - Copy the above `index.html` content into a file named `index.html`.
+   - Save it in your local project directory (e.g., `path/to/your/repository`).
+   - If you already have an `index.html`, overwrite it with this version.
+
+2. **Commit and Push to GitHub**:
+   - Open a terminal and navigate to your repository:
+     ```bash
+     cd path/to/your/repository
+     ```
+   - Stage the updated file:
+     ```bash
+     git add index.html
+     ```
+   - Commit the changes:
+     ```bash
+     git commit -m "Fix runtime error in loadArticles with improved error handling and update index.html"
+     ```
+   - Push to GitHub:
+     ```bash
+     git push origin main
+     ```
+     - Replace `main` with your branch name if different (e.g., `master`).
+
+3. **Verify Backend Setup**:
+   - Ensure your backend (`server.js`) is running and accessible at `http://localhost:3000/api` for local testing.
+   - Use the provided `server.js` from the previous response:
+     <xaiArtifact artifact_id="e799ca3c-e94c-48e3-810e-a6d925a0cd32" artifact_version_id="65cd58d5-4462-4bac-95be-b57248880cba" title="server.js" contentType="text/javascript">
+     ```javascript
+     const express = require('express');
+     const mongoose = require('mongoose');
+     const dotenv = require('dotenv');
+     const jwt = require('jsonwebtoken');
+     const bcrypt = require('bcryptjs');
+     const multer = require('multer');
+     const cloudinary = require('cloudinary').v2;
+     const cors = require('cors');
+     const { body, validationResult } = require('express-validator');
+
+     dotenv.config();
+     const app = express();
+
+     // Middleware
+     app.use(cors({
+       origin: ['http://localhost:3000', 'https://username.github.io'], // Adjust
