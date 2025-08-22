@@ -1250,65 +1250,26 @@
                     if (!isAdminLoggedIn) {
                         openAdminModal();
                     } else {
-                        console.log('Admin already logged in, showing panel');
+                        console.log('Admin already logged in, toggling panel');
                         const adminPanel = document.getElementById('adminPanel');
                         if (adminPanel) {
-                            adminPanel.classList.add('active');
+                            adminPanel.classList.toggle('active');
+                            if (adminPanel.classList.contains('active')) {
+                                loadArticlesForManagement();
+                            }
+                        } else {
+                            console.error('Admin panel element not found');
+                            alert('Error: Admin panel not found.');
                         }
                     }
                 }
             } catch (err) {
                 console.error('Keydown error:', err);
+                alert('Error handling Ctrl+Shift+A. Check console.');
             }
         });
 
-        // Page navigation
-        function showPage(pageId) {
-            try {
-                const pages = document.querySelectorAll('.page');
-                pages.forEach(page => page.classList.remove('active'));
-                
-                const targetPage = document.getElementById(pageId + 'Page');
-                if (targetPage) {
-                    targetPage.classList.add('active');
-                    currentPage = pageId;
-                    loadPageContent(pageId);
-                    window.scrollTo(0, 0);
-                } else {
-                    console.error(`Page ${pageId}Page not found`);
-                }
-            } catch (err) {
-                console.error('Show page error:', err);
-            }
-        }
-
-        // Load content for specific pages
-        function loadPageContent(pageId) {
-            try {
-                console.log(`Loading content for page: ${pageId}`);
-                switch(pageId) {
-                    case 'home':
-                        loadFeaturedArticles();
-                        break;
-                    case 'tech':
-                        loadCategoryArticles('Tech', 'techArticles');
-                        break;
-                    case 'ai':
-                        loadCategoryArticles('AI', 'aiArticles');
-                        break;
-                    case 'reviews':
-                        loadCategoryArticles('Reviews', 'reviewArticles');
-                        break;
-                    case 'innovation':
-                        loadCategoryArticles('Innovation', 'innovationArticles');
-                        break;
-                }
-            } catch (err) {
-                console.error('Load page content error:', err);
-            }
-        }
-
-        // Admin functions
+        // Admin modal functions
         function openAdminModal() {
             try {
                 const modal = document.getElementById('adminModal');
@@ -1321,6 +1282,7 @@
                 }
             } catch (err) {
                 console.error('Open admin modal error:', err);
+                alert('Error opening admin modal. Check console.');
             }
         }
 
@@ -1379,7 +1341,10 @@
                 isAdminLoggedIn = true;
                 closeAdminModal();
                 const adminPanel = document.getElementById('adminPanel');
-                if (adminPanel) adminPanel.classList.add('active');
+                if (adminPanel) {
+                    adminPanel.classList.add('active');
+                    loadArticlesForManagement();
+                }
             }
         }
 
@@ -1399,130 +1364,6 @@
             }
         }
 
-        function switchAdminTab(tabName) {
-            try {
-                const tabs = document.querySelectorAll('.admin-tab');
-                tabs.forEach(tab => tab.classList.remove('active'));
-                
-                const clickedTab = Array.from(tabs).find(tab => tab.textContent.toLowerCase().includes(tabName.toLowerCase()));
-                if (clickedTab) {
-                    clickedTab.classList.add('active');
-                }
-                
-                const contents = document.querySelectorAll('.admin-content');
-                contents.forEach(content => content.classList.remove('active'));
-                const content = document.getElementById('admin' + tabName.charAt(0).toUpperCase() + tabName.slice(1));
-                if (content) {
-                    content.classList.add('active');
-                    console.log(`Switched to admin tab: ${tabName}`);
-                }
-            } catch (err) {
-                console.error('Switch admin tab error:', err);
-            }
-        }
-
-        // Image preview
-        function previewImage(event) {
-            try {
-                const file = event.target.files[0];
-                const preview = document.getElementById('imagePreview');
-                if (file) {
-                    if (!['image/jpeg', 'image/png'].includes(file.type)) {
-                        alert('Please upload a JPEG or PNG image.');
-                        event.target.value = '';
-                        preview.style.display = 'none';
-                        return;
-                    }
-                    if (file.size > 2 * 1024 * 1024) {
-                        alert('Image size must be less than 2MB.');
-                        event.target.value = '';
-                        preview.style.display = 'none';
-                        return;
-                    }
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        preview.src = e.target.result;
-                        preview.style.display = 'block';
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    preview.style.display = 'none';
-                }
-            } catch (err) {
-                console.error('Preview image error:', err);
-            }
-        }
-
-        // Article modal
-        async function openArticleModal(id) {
-            try {
-                if (!id) {
-                    console.error('No article ID provided');
-                    alert('Error: No article ID provided.');
-                    return;
-                }
-                const response = await fetch(`${API_BASE_URL}/articles/${id}`);
-                if (!response.ok) {
-                    let errorMessage = `HTTP error ${response.status}: ${response.statusText}`;
-                    try {
-                        const errorData = await response.json();
-                        errorMessage = errorData.error || errorMessage;
-                    } catch {
-                        // No JSON response available
-                    }
-                    throw new Error(errorMessage);
-                }
-                const article = await response.json();
-                const modal = document.getElementById('articleModal');
-                const modalTitle = document.getElementById('modalTitle');
-                const modalMeta = document.getElementById('modalMeta');
-                const modalImage = document.getElementById('modalImage');
-                const modalContent = document.getElementById('modalContent');
-                const modalSource = document.getElementById('modalSource');
-
-                if (modal && modalTitle && modalMeta && modalContent) {
-                    modalTitle.textContent = article.title || 'Untitled';
-                    modalMeta.textContent = `${article.author || 'Unknown Author'} | ${article.date ? new Date(article.date).toLocaleDateString() : 'Unknown Date'} | ${article.readTime || 0} min read`;
-                    modalContent.innerHTML = article.content ? article.content.split('\n\n').map(para => `<p>${para}</p>`).join('') : '<p>No content available.</p>';
-                    modalSource.textContent = article.source ? `Source: ${article.source}` : '';
-                    
-                    if (article.image && modalImage) {
-                        modalImage.src = article.image;
-                        modalImage.style.display = 'block';
-                    } else if (modalImage) {
-                        modalImage.style.display = 'none';
-                    }
-
-                    modal.classList.add('active');
-                    console.log(`Opened article modal for ID: ${id}`);
-                } else {
-                    console.error('Article modal elements not found');
-                    alert('Error: Article modal elements missing.');
-                }
-            } catch (error) {
-                console.error('Error loading article:', error);
-                alert(`Failed to open article: ${error.message}.`);
-            }
-        }
-
-        function closeArticleModal() {
-            try {
-                const modal = document.getElementById('articleModal');
-                if (modal) {
-                    modal.classList.remove('active');
-                    document.getElementById('modalTitle').textContent = '';
-                    document.getElementById('modalMeta').textContent = '';
-                    document.getElementById('modalContent').innerHTML = '';
-                    document.getElementById('modalSource').textContent = '';
-                    const modalImage = document.getElementById('modalImage');
-                    if (modalImage) modalImage.style.display = 'none';
-                    console.log('Article modal closed');
-                }
-            } catch (err) {
-                console.error('Close article modal error:', err);
-            }
-        }
-
         // Affiliate popups
         function startAffiliatePopups() {
             try {
@@ -1534,15 +1375,17 @@
 
                 function showNextPopup() {
                     if (activePopups.length === 0) {
-                        console.log('All popups closed, stopping cycle.');
+                        console.log('No active popups remaining');
                         return;
                     }
 
+                    // Hide all popups
                     popups.forEach(id => {
                         const popup = document.getElementById(id);
                         if (popup) popup.classList.remove('show');
                     });
 
+                    // Show current popup
                     const currentPopupId = activePopups[currentIndex];
                     const currentPopup = document.getElementById(currentPopupId);
                     if (currentPopup) {
@@ -1556,125 +1399,78 @@
                     setTimeout(showNextPopup, 10000); // Cycle every 10 seconds
                 }
 
+                // Start after 5 seconds
                 setTimeout(() => {
-                    console.log('Starting popup cycle');
+                    console.log('Starting popup cycle after 5-second delay');
                     showNextPopup();
                 }, 5000);
+
+                // Expose closePopup globally for button onclick
+                window.closePopup = function(id) {
+                    try {
+                        const popup = document.getElementById(id);
+                        if (popup) {
+                            popup.classList.remove('show');
+                            activePopups = activePopups.filter(popupId => popupId !== id);
+                            console.log(`Closed popup: ${id}, remaining:`, activePopups);
+                        }
+                    } catch (err) {
+                        console.error('Close popup error:', err);
+                    }
+                };
             } catch (err) {
                 console.error('Popup initialization error:', err);
                 alert('Error initializing popups. Check console.');
             }
         }
 
-        function closePopup(id) {
+        // Page navigation
+        function showPage(pageId) {
             try {
-                const popup = document.getElementById(id);
-                if (popup) {
-                    popup.classList.remove('show');
-                    console.log(`Closed popup: ${id}`);
+                const pages = document.querySelectorAll('.page');
+                pages.forEach(page => page.classList.remove('active'));
+                
+                const targetPage = document.getElementById(pageId + 'Page');
+                if (targetPage) {
+                    targetPage.classList.add('active');
+                    currentPage = pageId;
+                    loadPageContent(pageId);
+                    window.scrollTo(0, 0);
+                } else {
+                    console.error(`Page ${pageId}Page not found`);
                 }
             } catch (err) {
-                console.error('Close popup error:', err);
+                console.error('Show page error:', err);
             }
         }
 
-        // Contact and newsletter forms
-        async function handleContact(event) {
+        // Load content for specific pages
+        function loadPageContent(pageId) {
             try {
-                event.preventDefault();
-                const name = document.getElementById('contactName')?.value;
-                const email = document.getElementById('contactEmail')?.value;
-                const subject = document.getElementById('contactSubject')?.value;
-                const message = document.getElementById('contactMessage')?.value;
-
-                if (!name || !email || !subject || !message) {
-                    alert('Please fill in all contact form fields.');
-                    return;
+                console.log(`Loading content for page: ${pageId}`);
+                switch(pageId) {
+                    case 'home':
+                        loadFeaturedArticles();
+                        break;
+                    case 'tech':
+                        loadCategoryArticles('Tech', 'techArticles');
+                        break;
+                    case 'ai':
+                        loadCategoryArticles('AI', 'aiArticles');
+                        break;
+                    case 'reviews':
+                        loadCategoryArticles('Reviews', 'reviewArticles');
+                        break;
+                    case 'innovation':
+                        loadCategoryArticles('Innovation', 'innovationArticles');
+                        break;
                 }
-
-                const response = await fetch(`${API_BASE_URL}/contact`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, subject, message }),
-                });
-                if (response.ok) {
-                    alert('Message sent successfully!');
-                    document.querySelector('#contactPage form').reset();
-                    console.log('Contact form submitted successfully');
-                } else {
-                    const data = await response.json();
-                    alert(data.error || `Error sending message: HTTP ${response.status}`);
-                    console.error('Contact form error:', data.error);
-                }
-            } catch (error) {
-                console.error('Error sending contact form:', error);
-                alert(`Error sending message: ${error.message}.`);
+            } catch (err) {
+                console.error('Load page content error:', err);
             }
         }
 
-        async function handleNewsletter(event) {
-            try {
-                event.preventDefault();
-                const email = document.getElementById('newsletterEmail')?.value;
-
-                if (!email) {
-                    alert('Please enter an email address.');
-                    return;
-                }
-
-                const response = await fetch(`${API_BASE_URL}/newsletter`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email }),
-                });
-                if (response.ok) {
-                    alert('Subscribed successfully!');
-                    document.getElementById('newsletterEmail').value = '';
-                    console.log('Newsletter subscription successful');
-                } else {
-                    const data = await response.json();
-                    alert(data.error || `Error subscribing to newsletter: HTTP ${response.status}`);
-                    console.error('Newsletter error:', data.error);
-                }
-            } catch (error) {
-                console.error('Error subscribing to newsletter:', error);
-                alert(`Error subscribing: ${error.message}.`);
-            }
-        }
-
-        async function saveSettings() {
-            try {
-                const siteTitle = document.getElementById('siteTitle')?.value;
-                const siteDescription = document.getElementById('siteDescription')?.value;
-
-                if (!siteTitle || !siteDescription) {
-                    alert('Please fill in all settings fields.');
-                    return;
-                }
-
-                const response = await fetch(`${API_BASE_URL}/settings`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`,
-                    },
-                    body: JSON.stringify({ siteTitle, siteDescription }),
-                });
-                if (response.ok) {
-                    alert('Settings saved successfully!');
-                    console.log('Settings saved');
-                } else {
-                    const data = await response.json();
-                    alert(data.error || `Error saving settings: HTTP ${response.status}`);
-                    console.error('Settings error:', data.error);
-                }
-            } catch (error) {
-                console.error('Error saving settings:', error);
-                alert(`Error saving settings: ${error.message}.`);
-            }
-        }
-
-        // Persistence functions
+        // Article handling
         async function loadArticles() {
             try {
                 const response = await fetch(`${API_BASE_URL}/articles`, {
@@ -1780,4 +1576,155 @@
                             <h3 class="article-title">${article.title}</h3>
                             <p class="article-excerpt">${article.excerpt}</p>
                             <div class="article-meta">
-                                <span>${article
+                                <span>${article.author || 'Unknown Author'}</span>
+                                <span>${article.date ? new Date(article.date).toLocaleDateString() : 'Unknown Date'}</span>
+                            </div>
+                        </div>
+                    </a>
+                `).join('') : `<p style="color: var(--gray-400); text-align: center;">No ${category} articles available at the moment.</p>`;
+                console.log(`Loaded ${category} articles into ${containerId}`);
+            } catch (err) {
+                console.error('Load category articles error:', err);
+            }
+        }
+
+        function updateCategoryCounts() {
+            try {
+                const counts = {
+                    ai: 0,
+                    tech: 0,
+                    innovation: 0,
+                    reviews: 0
+                };
+                articles.forEach(article => {
+                    const cat = article.category.toLowerCase();
+                    if (counts.hasOwnProperty(cat)) {
+                        counts[cat]++;
+                    }
+                });
+                document.getElementById('aiCount').textContent = `${counts.ai} articles`;
+                document.getElementById('techCount').textContent = `${counts.tech} articles`;
+                document.getElementById('innovationCount').textContent = `${counts.innovation} articles`;
+                document.getElementById('reviewsCount').textContent = `${counts.reviews} articles`;
+                console.log('Updated category counts:', counts);
+            } catch (err) {
+                console.error('Update category counts error:', err);
+            }
+        }
+
+        // Admin article management
+        async function createOrUpdatePost(event) {
+            try {
+                event.preventDefault();
+                const title = document.getElementById('postTitle').value;
+                const category = document.getElementById('postCategory').value;
+                const excerpt = document.getElementById('postExcerpt').value;
+                const content = document.getElementById('postContent').value;
+                const source = document.getElementById('postSource').value;
+                const imageFile = document.getElementById('postImageFile').files[0];
+                const imageUrl = document.getElementById('postImageUrl').value;
+
+                if (!title || !category || !excerpt || !content) {
+                    alert('Please fill in all required fields.');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('title', title);
+                formData.append('category', category);
+                formData.append('excerpt', excerpt);
+                formData.append('content', content);
+                if (source) formData.append('source', source);
+                if (imageFile) {
+                    formData.append('image', imageFile);
+                } else if (imageUrl) {
+                    formData.append('imageUrl', imageUrl);
+                }
+
+                const url = currentEditingId ? `${API_BASE_URL}/articles/${currentEditingId}` : `${API_BASE_URL}/articles`;
+                const method = currentEditingId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Authorization': `Bearer ${authToken}` },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert(currentEditingId ? 'Article updated successfully!' : 'Article published successfully!');
+                    document.querySelector('#adminCreate form').reset();
+                    document.getElementById('imagePreview').style.display = 'none';
+                    currentEditingId = null;
+                    document.getElementById('publishButton').textContent = 'Publish Article';
+                    loadArticles();
+                    loadArticlesForManagement();
+                    console.log(currentEditingId ? 'Article updated' : 'Article created');
+                } else {
+                    const data = await response.json();
+                    alert(data.error || `Error ${currentEditingId ? 'updating' : 'publishing'} article: HTTP ${response.status}`);
+                    console.error('Article error:', data.error);
+                }
+            } catch (error) {
+                console.error('Error creating/updating article:', error);
+                alert(`Error ${currentEditingId ? 'updating' : 'publishing'} article: ${error.message}.`);
+            }
+        }
+
+        async function loadArticlesForManagement() {
+            try {
+                const container = document.getElementById('articlesList');
+                if (!container) {
+                    console.error('Articles list container not found');
+                    return;
+                }
+                const response = await fetch(`${API_BASE_URL}/articles`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!response.ok) {
+                    let errorMessage = `HTTP error ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        // No JSON response
+                    }
+                    throw new Error(errorMessage);
+                }
+                const articles = await response.json();
+                container.innerHTML = articles.map(article => `
+                    <div style="background: var(--gray-700); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <h3 style="color: var(--white);">${article.title}</h3>
+                        <p style="color: var(--gray-400);">${article.category} | ${article.date ? new Date(article.date).toLocaleDateString() : 'Unknown Date'}</p>
+                        <button class="btn btn-secondary" onclick="editPost('${article._id}')">Edit</button>
+                        <button class="btn btn-danger" onclick="deletePost('${article._id}')">Delete</button>
+                    </div>
+                `).join('');
+                console.log('Loaded articles for management');
+            } catch (error) {
+                console.error('Error loading articles for management:', error);
+                container.innerHTML = '<p style="color: var(--gray-400); text-align: center;">Failed to load articles. Using demo mode.</p>';
+            }
+        }
+
+        async function editPost(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/articles/${id}`);
+                if (!response.ok) {
+                    let errorMessage = `HTTP error ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        // No JSON response
+                    }
+                    throw new Error(errorMessage);
+                }
+                const article = await response.json();
+                currentEditingId = id;
+                document.getElementById('postTitle').value = article.title || '';
+                document.getElementById('postCategory').value = article.category || '';
+                document.getElementById('postExcerpt').value = article.excerpt || '';
+                document.getElementById('postContent').value = article.content || '';
+                document.getElementById('postSource').value = article.source || '';
+                document.getElementById('postImageUrl').value = article.image || '';
+                document.get
