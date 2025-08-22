@@ -575,6 +575,7 @@
             max-height: 200px;
             border-radius: 8px;
             display: none;
+            object-fit: contain;
         }
 
         /* Popup Affiliate Ads */
@@ -970,5 +971,758 @@
                     </div>
                     <div class="form-group">
                         <label>Article Image (Upload or URL)</label>
-                        <input type="file" id="postImageFile" accept="image/jpeg,image/png Queen
-System: * Today's date and time is 03:14 AM EEST on Friday, August 22, 2025.
+                        <input type="file" id="postImageFile" accept="image/jpeg,image/png" onchange="previewImage(event)">
+                        <input type="url" id="postImageUrl" placeholder="Or paste image URL" style="margin-top: 0.5rem;" oninput="previewImageFromUrl(event)">
+                        <img id="imagePreview" class="image-preview" alt="Image Preview">
+                    </div>
+                    <div class="form-group">
+                        <label>Source (optional)</label>
+                        <input type="text" id="postSource" placeholder="e.g. TechCrunch, The Verge">
+                    </div>
+                    <button type="submit" class="btn" id="publishButton">Publish Article</button>
+                    <button type="button" class="btn btn-secondary" onclick="cancelEdit()" style="margin-top: 0.5rem;">Cancel Edit</button>
+                </form>
+            </div>
+
+            <!-- Manage Posts Tab -->
+            <div id="adminManage" class="admin-content">
+                <h3 style="color: var(--white); margin-bottom: 1rem;">Manage Articles</h3>
+                <div id="articlesList">
+                    <!-- Articles will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="adminSettings" class="admin-content">
+                <h3 style="color: var(--white); margin-bottom: 1rem;">Site Settings</h3>
+                <form class="content-form">
+                    <div class="form-group">
+                        <label>Site Title</label>
+                        <input type="text" value="ByteCast Network™" id="siteTitle">
+                    </div>
+                    <div class="form-group">
+                        <label>Site Description</label>
+                        <textarea rows="3" id="siteDescription">Your premier source for tech news, AI updates, and innovation insights.</textarea>
+                    </div>
+                    <button type="button" class="btn" onclick="saveSettings()">Save Settings</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- HOME PAGE -->
+        <div id="homePage" class="page active">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="container">
+                    <div class="hero-content">
+                        <h1></h1>
+                        <p>Your premier source for tech news, AI breakthroughs, and innovation insights. Stay ahead of the digital revolution.</p>
+                        <a href="#" class="cta-button" onclick="showPage('tech')">Explore Latest Tech</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- A-ADS Banner -->
+            <section class="ad-banner">
+                <div class="container">
+                    <div id="frame" style="width: 100%; margin: auto; background: rgba(0, 0, 0, 0.50); position: relative; z-index: 1500;">
+                        <iframe data-aa='2407511' src='//acceptable.a-ads.com/2407511/?size=Adaptive'
+                                style='border: 0; padding: 0; width: 100%; max-width: 728px; height: auto; overflow: hidden; display: block; margin: auto;'
+                                title="A-ADS Advertisement"></iframe>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Articles -->
+            <section class="featured">
+                <div class="container">
+                    <h2 class="section-title">Featured Stories</h2>
+                    <div class="articles-grid" id="featuredArticles">
+                        <!-- Dynamic content will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Categories -->
+            <section class="categories">
+                <div class="container">
+                    <h2 class="section-title">Explore Categories</h2>
+                    <div class="category-grid">
+                        <div class="category-card" onclick="showPage('ai')">
+                            <div class="category-icon">🤖</div>
+                            <div class="category-name">Artificial Intelligence</div>
+                            <div class="category-count" id="aiCount">0 articles</div>
+                        </div>
+                        <div class="category-card" onclick="showPage('tech')">
+                            <div class="category-icon">📱</div>
+                            <div class="category-name">Technology</div>
+                            <div class="category-count" id="techCount">0 articles</div>
+                        </div>
+                        <div class="category-card" onclick="showPage('innovation')">
+                            <div class="category-icon">💡</div>
+                            <div class="category-name">Innovation</div>
+                            <div class="category-count" id="innovationCount">0 articles</div>
+                        </div>
+                        <div class="category-card" onclick="showPage('reviews')">
+                            <div class="category-icon">⭐</div>
+                            <div class="category-name">Reviews</div>
+                            <div class="category-count" id="reviewsCount">0 articles</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- TECH PAGE -->
+        <div id="techPage" class="page">
+            <section class="featured">
+                <div class="container">
+                    <h2 class="section-title">Technology News</h2>
+                    <div class="articles-grid" id="techArticles">
+                        <!-- Tech articles will be loaded here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- AI PAGE -->
+        <div id="aiPage" class="page">
+            <section class="featured">
+                <div class="container">
+                    <h2 class="section-title">Artificial Intelligence</h2>
+                    <div class="articles-grid" id="aiArticles">
+                        <!-- AI articles will be loaded here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- REVIEWS PAGE -->
+        <div id="reviewsPage" class="page">
+            <section class="featured">
+                <div class="container">
+                    <h2 class="section-title">Product Reviews</h2>
+                    <div class="articles-grid" id="reviewArticles">
+                        <!-- Review articles will be loaded here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- INNOVATION PAGE -->
+        <div id="innovationPage" class="page">
+            <section class="featured">
+                <div class="container">
+                    <h2 class="section-title">Innovation & Startups</h2>
+                    <div class="articles-grid" id="innovationArticles">
+                        <!-- Innovation articles will be loaded here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- CONTACT PAGE -->
+        <div id="contactPage" class="page">
+            <section class="featured">
+                <div class="container">
+                    <h2 class="section-title">Contact Us</h2>
+                    <div style="max-width: 600px; margin: 0 auto; background: var(--gray-800); padding: 2rem; border-radius: 15px;">
+                        <form class="content-form" onsubmit="handleContact(event)">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" id="contactName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="contactEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <input type="text" id="contactSubject" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Message</label>
+                                <textarea id="contactMessage" rows="6" required></textarea>
+                            </div>
+                            <button type="submit" class="btn">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>ByteCast Network</h3>
+                    <p style="color: var(--gray-400); margin-bottom: 1rem;">Your premier source for tech news, AI updates, and innovation insights.</p>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="https://x.com/bytecastnetwork" target="_blank" class="social-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            </svg>
+                        </a>
+                        <a href="https://instagram.com/bytecastnetwork" target="_blank" class="social-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.221 1.66-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Categories</h3>
+                    <a href="#" onclick="showPage('tech')">Technology</a>
+                    <a href="#" onclick="showPage('ai')">Artificial Intelligence</a>
+                    <a href="#" onclick="showPage('innovation')">Innovation</a>
+                    <a href="#" onclick="showPage('reviews')">Reviews</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <a href="#" onclick="showPage('home')">Home</a>
+                    <a href="#" onclick="showPage('contact')">Contact Us</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Newsletter</h3>
+                    <p style="color: var(--gray-400); margin-bottom: 1rem;">Stay updated with the latest tech news and insights.</p>
+                    <form onsubmit="handleNewsletter(event)" style="display: flex; gap: 0.5rem;">
+                        <input type="email" id="newsletterEmail" placeholder="Your email" style="flex: 1; padding: 0.5rem; background: var(--gray-800); border: 1px solid var(--gray-600); border-radius: 5px; color: var(--white);" required>
+                        <button type="submit" style="padding: 0.5rem 1rem; background: var(--white); color: var(--black); border: none; border-radius: 5px; font-weight: bold;">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; ByteCast Network™. All rights reserved. | Bringing you the future of technology.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables
+        let articles = [];
+        let isAdminLoggedIn = false;
+        let currentPage = 'home';
+        let currentEditingId = null;
+        let authToken = null;
+        const API_BASE_URL = 'http://localhost:3000/api'; // Update to your backend URL
+
+        // Initialize the website
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                console.log('DOM fully loaded, initializing website...');
+                loadArticles();
+                loadFeaturedArticles();
+                updateCategoryCounts();
+                startAffiliatePopups();
+                checkAdminToken();
+            } catch (err) {
+                console.error('Initialization error:', err);
+                alert('Error initializing website. Check console for details.');
+            }
+        });
+
+        // Check for existing admin token
+        function checkAdminToken() {
+            try {
+                authToken = localStorage.getItem('authToken');
+                if (authToken) {
+                    console.log('Admin token found, enabling admin panel');
+                    isAdminLoggedIn = true;
+                    const adminPanel = document.getElementById('adminPanel');
+                    if (adminPanel) {
+                        adminPanel.classList.add('active');
+                        loadArticlesForManagement();
+                    } else {
+                        console.error('Admin panel element not found');
+                    }
+                }
+            } catch (err) {
+                console.error('Check admin token error:', err);
+            }
+        }
+
+        // Admin access
+        document.addEventListener('keydown', function(e) {
+            try {
+                if (e.ctrlKey && e.shiftKey && e.code === 'KeyA') {
+                    e.preventDefault();
+                    console.log('Ctrl+Shift+A pressed');
+                    if (!isAdminLoggedIn) {
+                        const adminModal = document.getElementById('adminModal');
+                        if (adminModal) {
+                            adminModal.classList.add('active');
+                            console.log('Admin login modal opened');
+                        } else {
+                            console.error('Admin modal element not found');
+                            alert('Error: Admin modal not found.');
+                        }
+                    } else {
+                        const adminPanel = document.getElementById('adminPanel');
+                        if (adminPanel) {
+                            adminPanel.classList.toggle('active');
+                            console.log('Admin panel toggled:', adminPanel.classList.contains('active') ? 'visible' : 'hidden');
+                            if (adminPanel.classList.contains('active')) {
+                                loadArticlesForManagement();
+                            }
+                        } else {
+                            console.error('Admin panel element not found');
+                            alert('Error: Admin panel not found.');
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Keydown error:', err);
+                alert('Error handling Ctrl+Shift+A. Check console.');
+            }
+        });
+
+        // Admin modal functions
+        function openAdminModal() {
+            try {
+                const modal = document.getElementById('adminModal');
+                if (modal) {
+                    modal.classList.add('active');
+                    console.log('Admin modal opened');
+                } else {
+                    console.error('Admin modal element not found');
+                    alert('Error: Admin modal not found.');
+                }
+            } catch (err) {
+                console.error('Open admin modal error:', err);
+                alert('Error opening admin modal. Check console.');
+            }
+        }
+
+        function closeAdminModal() {
+            try {
+                const modal = document.getElementById('adminModal');
+                if (modal) {
+                    modal.classList.remove('active');
+                    document.getElementById('adminUsername').value = '';
+                    document.getElementById('adminPassword').value = '';
+                    console.log('Admin modal closed');
+                }
+            } catch (err) {
+                console.error('Close admin modal error:', err);
+            }
+        }
+
+        async function adminLogin() {
+            try {
+                const username = document.getElementById('adminUsername')?.value;
+                const password = document.getElementById('adminPassword')?.value;
+                
+                if (!username || !password) {
+                    alert('Please enter both username and password.');
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    authToken = data.token;
+                    localStorage.setItem('authToken', authToken);
+                    isAdminLoggedIn = true;
+                    const adminPanel = document.getElementById('adminPanel');
+                    if (adminPanel) {
+                        adminPanel.classList.add('active');
+                        closeAdminModal();
+                        loadArticlesForManagement();
+                        alert('Welcome to ByteCast Admin Panel!');
+                        console.log('Admin login successful');
+                    } else {
+                        console.error('Admin panel element not found');
+                        alert('Error: Admin panel not found.');
+                    }
+                } else {
+                    alert(data.error || 'Invalid credentials. Please try again.');
+                    console.error('Login failed:', data.error || 'Invalid credentials');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Error connecting to server. Using demo mode.');
+                isAdminLoggedIn = true;
+                closeAdminModal();
+                const adminPanel = document.getElementById('adminPanel');
+                if (adminPanel) {
+                    adminPanel.classList.add('active');
+                    loadArticlesForManagement();
+                    console.log('Admin panel opened in demo mode');
+                } else {
+                    console.error('Admin panel element not found');
+                    alert('Error: Admin panel not found.');
+                }
+            }
+        }
+
+        function adminLogout() {
+            try {
+                isAdminLoggedIn = false;
+                authToken = null;
+                localStorage.removeItem('authToken');
+                const adminPanel = document.getElementById('adminPanel');
+                if (adminPanel) {
+                    adminPanel.classList.remove('active');
+                    alert('Logged out successfully.');
+                    console.log('Admin logged out');
+                }
+            } catch (err) {
+                console.error('Logout error:', err);
+            }
+        }
+
+        // Affiliate popups
+        function startAffiliatePopups() {
+            try {
+                const popups = ['aliexpressAd', 'coohomAd', 'redmagicAd'];
+                let activePopups = [...popups];
+                let currentIndex = 0;
+
+                console.log('Initializing affiliate popups:', activePopups);
+
+                function showNextPopup() {
+                    if (activePopups.length === 0) {
+                        console.log('No active popups remaining');
+                        return;
+                    }
+
+                    // Hide all popups
+                    popups.forEach(id => {
+                        const popup = document.getElementById(id);
+                        if (popup) {
+                            popup.classList.remove('show');
+                        }
+                    });
+
+                    // Show current popup
+                    const currentPopupId = activePopups[currentIndex];
+                    const currentPopup = document.getElementById(currentPopupId);
+                    if (currentPopup) {
+                        currentPopup.classList.add('show');
+                        console.log(`Showing popup: ${currentPopupId}`);
+                    } else {
+                        console.warn(`Popup element ${currentPopupId} not found`);
+                    }
+
+                    currentIndex = (currentIndex + 1) % activePopups.length;
+                    setTimeout(showNextPopup, 10000); // Cycle every 10 seconds
+                }
+
+                // Start after 5 seconds
+                setTimeout(() => {
+                    console.log('Starting popup cycle after 5-second delay');
+                    showNextPopup();
+                }, 5000);
+
+                // Expose closePopup globally
+                window.closePopup = function(id) {
+                    try {
+                        const popup = document.getElementById(id);
+                        if (popup) {
+                            popup.classList.remove('show');
+                            activePopups = activePopups.filter(popupId => popupId !== id);
+                            console.log(`Closed popup: ${id}, remaining:`, activePopups);
+                        }
+                    } catch (err) {
+                        console.error('Close popup error:', err);
+                    }
+                };
+            } catch (err) {
+                console.error('Popup initialization error:', err);
+                alert('Error initializing popups. Check console.');
+            }
+        }
+
+        // Image preview
+        function previewImage(event) {
+            try {
+                const file = event.target.files[0];
+                const preview = document.getElementById('imagePreview');
+                if (!preview) {
+                    console.error('Image preview element not found');
+                    return;
+                }
+
+                if (file) {
+                    if (!file.type.match('image/(jpeg|png)')) {
+                        console.error('Invalid file type:', file.type);
+                        alert('Please select a JPEG or PNG image.');
+                        preview.style.display = 'none';
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                        console.log('Previewing image from file');
+                    };
+                    reader.onerror = function() {
+                        console.error('Error reading file');
+                        alert('Error reading image file.');
+                        preview.style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                    document.getElementById('postImageUrl').value = ''; // Clear URL input
+                } else {
+                    preview.style.display = 'none';
+                    console.log('No file selected for preview');
+                }
+            } catch (err) {
+                console.error('Preview image error:', err);
+                alert('Error previewing image. Check console.');
+            }
+        }
+
+        function previewImageFromUrl(event) {
+            try {
+                const url = event.target.value;
+                const preview = document.getElementById('imagePreview');
+                if (!preview) {
+                    console.error('Image preview element not found');
+                    return;
+                }
+
+                if (url) {
+                    // Basic URL validation
+                    const isValidUrl = url.match(/\.(jpeg|jpg|png)$/i);
+                    if (!isValidUrl) {
+                        console.warn('Invalid image URL:', url);
+                        preview.style.display = 'none';
+                        return;
+                    }
+                    preview.src = url;
+                    preview.style.display = 'block';
+                    console.log('Previewing image from URL:', url);
+                    document.getElementById('postImageFile').value = ''; // Clear file input
+                } else {
+                    preview.style.display = 'none';
+                    console.log('No URL provided for preview');
+                }
+            } catch (err) {
+                console.error('Preview image from URL error:', err);
+                alert('Error previewing image from URL. Check console.');
+            }
+        }
+
+        // Page navigation
+        function showPage(pageId) {
+            try {
+                const pages = document.querySelectorAll('.page');
+                pages.forEach(page => page.classList.remove('active'));
+                
+                const targetPage = document.getElementById(pageId + 'Page');
+                if (targetPage) {
+                    targetPage.classList.add('active');
+                    currentPage = pageId;
+                    loadPageContent(pageId);
+                    window.scrollTo(0, 0);
+                } else {
+                    console.error(`Page ${pageId}Page not found`);
+                }
+            } catch (err) {
+                console.error('Show page error:', err);
+            }
+        }
+
+        // Load content for specific pages
+        function loadPageContent(pageId) {
+            try {
+                console.log(`Loading content for page: ${pageId}`);
+                switch(pageId) {
+                    case 'home':
+                        loadFeaturedArticles();
+                        break;
+                    case 'tech':
+                        loadCategoryArticles('Tech', 'techArticles');
+                        break;
+                    case 'ai':
+                        loadCategoryArticles('AI', 'aiArticles');
+                        break;
+                    case 'reviews':
+                        loadCategoryArticles('Reviews', 'reviewArticles');
+                        break;
+                    case 'innovation':
+                        loadCategoryArticles('Innovation', 'innovationArticles');
+                        break;
+                }
+            } catch (err) {
+                console.error('Load page content error:', err);
+            }
+        }
+
+        // Article handling
+        async function loadArticles() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/articles`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!response.ok) {
+                    let errorMessage = `HTTP error ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        // No JSON response
+                    }
+                    throw new Error(errorMessage);
+                }
+                articles = await response.json();
+                if (!Array.isArray(articles)) {
+                    throw new Error('Invalid response: Expected an array of articles.');
+                }
+                console.log('Articles loaded:', articles.length);
+                updateCategoryCounts();
+                loadFeaturedArticles();
+                loadPageContent(currentPage);
+            } catch (error) {
+                console.error('Error loading articles:', error);
+                alert('Failed to load articles. Using fallback data.');
+                articles = [
+                    {
+                        _id: 'fallback_' + Date.now() + 1,
+                        title: "Revolutionary AI Breakthrough in Natural Language Processing",
+                        category: "AI",
+                        excerpt: "Scientists have developed a new AI model that can understand context with unprecedented accuracy.",
+                        content: "Revolutionary AI research has achieved a major breakthrough in natural language processing.\n\nKey features include enhanced reasoning capabilities, improved emotional intelligence, and revolutionary context awareness.\n\nReal-world applications span healthcare, education, and customer service.",
+                        image: "https://images.unsplash.com/photo-1516321310766-78a9951d08d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
+                        source: "ByteCast Network",
+                        date: new Date().toISOString(),
+                        author: "ByteCast Team",
+                        readTime: 4
+                    },
+                    {
+                        _id: 'fallback_' + Date.now() + 2,
+                        title: "Quantum Computing: The Next Frontier",
+                        category: "Tech",
+                        excerpt: "Quantum computers are set to revolutionize the tech industry with unmatched processing power.",
+                        content: "Quantum computing is advancing rapidly, promising to solve problems beyond the reach of classical computers.\n\nRecent developments include new qubit designs and error correction techniques.\n\nApplications include cryptography, AI, and drug discovery.",
+                        image: "https://images.unsplash.com/photo-1595675021516-1d81b1b3f7c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
+                        source: "ByteCast Network",
+                        date: new Date().toISOString(),
+                        author: "ByteCast Team",
+                        readTime: 5
+                    }
+                ];
+                updateCategoryCounts();
+                loadFeaturedArticles();
+                loadPageContent(currentPage);
+            }
+        }
+
+        function loadFeaturedArticles() {
+            try {
+                const container = document.getElementById('featuredArticles');
+                if (!container) {
+                    console.error('Featured articles container not found');
+                    return;
+                }
+                container.innerHTML = articles.slice(0, 3).map(article => `
+                    <a href="#" class="article-card" onclick="openArticleModal('${article._id}'); return false;">
+                        <div class="article-image">
+                            ${article.image ? `<img src="${article.image}" alt="${article.title}">` : 'No Image'}
+                        </div>
+                        <div class="article-content">
+                            <span class="article-category">${article.category}</span>
+                            <h3 class="article-title">${article.title}</h3>
+                            <p class="article-excerpt">${article.excerpt}</p>
+                            <div class="article-meta">
+                                <span>${article.author || 'Unknown Author'}</span>
+                                <span>${article.date ? new Date(article.date).toLocaleDateString() : 'Unknown Date'}</span>
+                            </div>
+                        </div>
+                    </a>
+                `).join('');
+                console.log('Loaded featured articles');
+            } catch (err) {
+                console.error('Load featured articles error:', err);
+            }
+        }
+
+        function loadCategoryArticles(category, containerId) {
+            try {
+                const container = document.getElementById(containerId);
+                if (!container) {
+                    console.error(`Container ${containerId} not found`);
+                    return;
+                }
+                const filteredArticles = articles.filter(article => article.category === category);
+                container.innerHTML = filteredArticles.length > 0 ? filteredArticles.map(article => `
+                    <a href="#" class="article-card" onclick="openArticleModal('${article._id}'); return false;">
+                        <div class="article-image">
+                            ${article.image ? `<img src="${article.image}" alt="${article.title}">` : 'No Image'}
+                        </div>
+                        <div class="article-content">
+                            <span class="article-category">${article.category}</span>
+                            <h3 class="article-title">${article.title}</h3>
+                            <p class="article-excerpt">${article.excerpt}</p>
+                            <div class="article-meta">
+                                <span>${article.author || 'Unknown Author'}</span>
+                                <span>${article.date ? new Date(article.date).toLocaleDateString() : 'Unknown Date'}</span>
+                            </div>
+                        </div>
+                    </a>
+                `).join('') : `<p style="color: var(--gray-400); text-align: center;">No ${category} articles available at the moment.</p>`;
+                console.log(`Loaded ${category} articles into ${containerId}`);
+            } catch (err) {
+                console.error('Load category articles error:', err);
+            }
+        }
+
+        function updateCategoryCounts() {
+            try {
+                const counts = {
+                    ai: 0,
+                    tech: 0,
+                    innovation: 0,
+                    reviews: 0
+                };
+                articles.forEach(article => {
+                    const cat = article.category.toLowerCase();
+                    if (counts.hasOwnProperty(cat)) {
+                        counts[cat]++;
+                    }
+                });
+                document.getElementById('aiCount').textContent = `${counts.ai} articles`;
+                document.getElementById('techCount').textContent = `${counts.tech} articles`;
+                document.getElementById('innovationCount').textContent = `${counts.innovation} articles`;
+                document.getElementById('reviewsCount').textContent = `${counts.reviews} articles`;
+                console.log('Updated category counts:', counts);
+            } catch (err) {
+                console.error('Update category counts error:', err);
+            }
+        }
+
+        // Article modal
+        function openArticleModal(id) {
+            try {
+                const article = articles.find(a => a._id === id);
+                if (!article) {
+                    console.error('Article not found:', id);
+                    return;
+                }
+                const modal = document.getElementById('articleModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const modalMeta = document.getElementById('modalMeta');
+                const modalImage = document.getElementById('modalImage');
+                const modalContent = document.getElementById('modalContent');
+                const modalSource = document.getElementById('modalSource');
+
+                if (!modal || !modalTitle || !modalMeta || !modalImage || !modalContent || !modalSource) {
+                    console.error('Article modal elements not found');
+                    return;
+                }
+
+                modalTitle.textContent = article.title;
+                modalMeta.textContent = `${article.author || 'Unknown Author'} | ${article.date ? new Date(article.date).toLocaleDateString() : 'Unknown Date'} | ${article.readTime || 5} min read`;
+                modalImage.src = article.image || '';
+                modalImage.style.display = article.image ? 'block' : 'none';
+                modalContent.innerHTML = article.content.split('\n\n').map(para => `<p>${para}</p>`).join('');
+                modalSource.textContent = article.source ? `Source: ${article.source}` : '';
+                modal.classList.add('active');
+                console.log('Opened article modal for:', id);
+            } catch (err)
